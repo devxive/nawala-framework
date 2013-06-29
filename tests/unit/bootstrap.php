@@ -29,74 +29,20 @@ ini_set('display_errors', 1);
  */
 if (!defined('JPATH_TESTS'))
 {
-//	define('JPATH_TESTS', realpath(__DIR__));
-}
-if (!defined('JPATH_TEST_DATABASE'))
-{
-//	define('JPATH_TEST_DATABASE', JPATH_TESTS . '/stubs/database');
-}
-if (!defined('JPATH_TEST_STUBS'))
-{
-//	define('JPATH_TEST_STUBS', JPATH_TESTS . '/stubs');
-}
-if (!defined('JPATH_PLATFORM'))
-{
-//	define('JPATH_PLATFORM', realpath(dirname(dirname(__DIR__)) . '/libraries'));
+	define('JPATH_TESTS', realpath(__DIR__));
 }
 if (!defined('JPATH_LIBRARIES'))
 {
-//	define('JPATH_LIBRARIES', realpath(dirname(dirname(__DIR__)) . '/libraries'));
+	define('JPATH_LIBRARIES', realpath(dirname(dirname(__DIR__)) . '/libraries'));
 }
 if (!defined('JPATH_BASE'))
 {
-//	define('JPATH_BASE', realpath(dirname(dirname(__DIR__))));
+	define('JPATH_BASE', realpath(dirname(dirname(__DIR__))));
 }
 if (!defined('JPATH_ROOT'))
 {
-//	define('JPATH_ROOT', realpath(JPATH_BASE));
-}
-if (!defined('JPATH_CACHE'))
-{
-//	define('JPATH_CACHE', JPATH_BASE . '/cache');
-}
-if (!defined('JPATH_CONFIGURATION'))
-{
-//	define('JPATH_CONFIGURATION', JPATH_BASE);
-}
-if (!defined('JPATH_SITE'))
-{
-//	define('JPATH_SITE', JPATH_ROOT);
-}
-if (!defined('JPATH_ADMINISTRATOR'))
-{
-//	define('JPATH_ADMINISTRATOR', JPATH_ROOT . '/administrator');
-}
-if (!defined('JPATH_INSTALLATION'))
-{
-//	define('JPATH_INSTALLATION', JPATH_ROOT . '/installation');
-}
-if (!defined('JPATH_MANIFESTS'))
-{
-//	define('JPATH_MANIFESTS', JPATH_ADMINISTRATOR . '/manifests');
-}
-if (!defined('JPATH_PLUGINS'))
-{
-//	define('JPATH_PLUGINS', JPATH_BASE . '/plugins');
-}
-if (!defined('JPATH_THEMES'))
-{
-//	define('JPATH_THEMES', JPATH_BASE . '/templates');
+	define('JPATH_ROOT', realpath(JPATH_BASE));
 }
 
-// Import the platform in legacy mode.
-// require_once JPATH_PLATFORM . '/import.legacy.php';
-
-// Force library to be in JError legacy mode
-// JError::setErrorHandling(E_NOTICE, 'message');
-// JError::setErrorHandling(E_WARNING, 'message');
-
-// Bootstrap the CMS libraries.
-// require_once JPATH_LIBRARIES . '/cms.php';
-
-// Register the core Joomla test classes.
-// JLoader::registerPrefix('Test', __DIR__ . '/core');
+// Import the entrypoint
+require_once JPATH_TESTS . '/includes/framework.php';
