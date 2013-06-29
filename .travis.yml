@@ -5,8 +5,6 @@ php:
 
 before_script:
   - phpenv rehash
-  - mysql -e 'create database xirm_ut;'
-  - mysql xirm_ut < tests/unit/database/mysql.sql
 
 script:
   - phpunit --configuration travisci-phpunit.xml
