@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit bootstrap="tests/unit/bootstrap.php" colors="true">
+	<php>
+		<const name="JTEST_DATABASE_MYSQL_DSN" value="host=localhost;dbname=xirm_ut;user=root;pass=" />
+		<const name="JTEST_DATABASE_MYSQLI_DSN" value="host=localhost;dbname=xirm_ut;user=root;pass=" />
+	</php>
+
+	<testsuites>
+		<testsuite name="XiveIRM">
+			<directory>tests/unit</directory>
+		</testsuite>
+		<testsuite name="installer">
+			<directory>tests/unit/components</directory>
+		</testsuite>
+		<testsuite name="libraries">
+			<directory>tests/unit/plugins</directory>
+		</testsuite>
+	</testsuites>
+
+	<logging>
+		<log type="coverage-text" target="php://stdout" lowUpperBound="35" highLowerBound="70" />
+	</logging>
+	<filter>
+		<whitelist addUncoveredFilesFromWhitelist="true">
+		</whitelist>
+	</filter>
+</phpunit>
