@@ -106,7 +106,7 @@ abstract class NHtml
 	 *
 	 * @return  string  JavaScript object notation representation of the array
 	 *
-	 * @since   0.0
+	 * @since   13.6
 	 */
 	public static function getJSObject(array $array = array())
 	{
