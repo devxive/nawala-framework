@@ -164,6 +164,9 @@ abstract class NHtmlJavaScript
 		// Include JS framework
 		NHtml::loadJsFramework();
 
+		// Include dependencies
+		self::dependencies('devxive.sitereadyoverlay');
+
 		// Attach the function to the document
 		JFactory::getDocument()->addScriptDeclaration(
 			"jQuery( window ).load(function() {
@@ -202,8 +205,12 @@ abstract class NHtmlJavaScript
 
 		if($type === 'ui.effects')
 		{
-//			JHtml::_('stylesheet', 'nawala/jquery.ui.effects.css', false, true);
 			JHtml::_('script', 'nawala/jquery.ui.effects.js', false, true, false, false, $debug);
+		}
+
+		if($type === 'devxive.sitereadyoverlay')
+		{
+			JHtml::_('stylesheet', 'nawala/devxive.sitereadyoverlay.css', false, true);
 		}
 
 		self::$loaded[__METHOD__][$sig] = true;
