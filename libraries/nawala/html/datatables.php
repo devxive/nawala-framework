@@ -69,6 +69,29 @@ abstract class NHtmlDataTables
 	 * 							]
 	 * 						});
 	 *
+	 * Xive-TODO:					// JSON Format example, dataTable as var
+	 * 						jQuery(function() {
+	 * 							var oTable = $("#table_contacts").dataTable( {
+	 * 								"aoColumns": [
+	 * 									{ "bSortable": false },
+	 * 									null, null, null, null, null, null,
+	 * 									{ "bSortable": false }
+	 * 								]
+	 * 							});
+	 * 						});
+	 *
+	 * Xive-TODO:					// JSON Format example with checkboxes
+	 * 						jQuery(function() {
+	 * 							$(\'table th input:checkbox\').on(\'click\' , function(){
+	 * 								var that = this;
+	 * 								$(this).closest(\'table\').find(\'tr > td:first-child input:checkbox\')
+	 * 									.each(function(){
+	 * 										this.checked = that.checked;
+	 * 										$(this).closest(\'tr\').toggleClass(\'selected\');
+	 * 									});
+	 * 							});
+	 * 						});
+	 *
 	 * @return  void
 	 *
 	 * @see     www.datatables.net/ref		Full list of references
