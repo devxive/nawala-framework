@@ -68,20 +68,28 @@ class NLoader
 		 */
 
 		// Dependency aka mainClass
-		if($dep && !class_exists($mainClass) && JFile::exists($depFile)) {
-			require_once $depFile;
+		if($dep && !class_exists($mainClass)) {
+			if(JFile::exists($depFile)) {
+				require_once $depFile;
+			} else {
+				return sprintf('%s not exist.', $depFile);
+			}
+
 			if(!class_exists($mainClass))
 			{
 				return sprintf('%s not exist.', $className);
 			}
-		} else {
-			return sprintf('%s or %s not exist.', $depFile, $className);
 		}
 
 		// Class aka mainClassSubClass
-		if(!class_exists($className) && JFile::exists($classFile))
+		if(!class_exists($className))
 		{
+			if(JFile::exists($depFile)) {
 			require_once $classFile;
+			} else {
+				return sprintf('%s not exist.', $classFile);
+			}
+
 			if(!class_exists($className))
 			{
 				return sprintf('%s not exist.', $className);
