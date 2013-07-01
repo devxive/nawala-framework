@@ -20,61 +20,74 @@ class NLoader
 	/**
 	 * Class loader method
 	 *
-	 * @param	string		$key	The name of helper method to load, mainClass.subClass
-	 * 					The mainClass is also used as folder- and subClass as filename.
-	 * 					Both together are build the className which is used in the file.
-	 * 					Example:
-	 * 			     			Key: NHtml.DataTable
-	 * 			     			       |       |
-	 * 			     		          mainClass   |
-	 * 			     			       |    subClass
-	 * 			     			     Folder    |
-	 * 			     			            Filename
+	 * @param	string		$key		The name of helper method to load, mainClass.subClass
+	 * 						The mainClass is also used as folder- and subClass as filename.
+	 * 						Both together are build the className which is used in the file.
+	 * 						Example:
+	 * 				     			Key: NHtml.DataTable
+	 * 				     			       |       |
+	 * 				     		          mainClass   |
+	 * 				     			       |    subClass
+	 * 				     			     Folder    |
+	 * 				     			            Filename
 	 *
-	 * @return	mixed			Import the appropriate class or false on error
+	 * @param	bool		$dep		True or false if we should load dependency core/main class
+	 *
+	 * @return	mixed				Import the appropriate class or false on error
 	 *
 	 * @since	13.6
 	 */
-	public static function _($key)
+	public static function _($key, $dep = true)
 	{
 		$key = preg_replace('#[^A-Z0-9_\.]#i', '', $key);
 
 		// extract the key to see what file we have to import
 		$parts = explode('.', $key);
 
+		// Build className, file and folder from the key and/or the extracted parts of the key
+		// Like: "NHtmlDataTable" which is the abstract class we have in "html/datatable.php".
 		if(count($parts) == 2) {
 			$mainClass	= array_shift($parts); // Could be "NHtml"
 			$subClass	= array_shift($parts); // Could be "DataTable"
+
+			// Substract the first letter from mainClass (Makes ie. "Html" from "NHtml")
+			$folder 	= strtolower(substr($mainClass, 1));
+			$file 		= strtolower($subClass);
+
+			$depFile	= NPATH_FRAMEWORK . '/' . $folder . '/' . $folder . '.php';
+			$classFile	= NPATH_FRAMEWORK . '/' . $folder . '/' . $file . '.php';
+
+			// Ensure we fit naming conv. (uc first 2 letters of the main class) and use the foldername to build the class name
+			$className	= 'N' . ucfirst($folder) . ucfirst($subClass);
 		} else {
 			return sprintf('%s is not a valid key.', $key);
 		}
 
-		// Substract the first letter from rawFolder (Makes ie. "Html" from "NHtml")
-		$folder = substr($mainClass, 1);
+		/*
+		 * Check if we need dependency and if classes doesn't exist, else load the appropriate files
+		 */
 
-		// Ensure we fit naming conv. to check if the class have already been loaded.
-		// Like example above: "NHtmlDataTable" which is the abstract class we have in "html/datatable.php".
-		$className = ucfirst($folder) . ucfirst($subClass);
+		// Dependency aka mainClass
+		if($dep && !class_exists($mainClass) && JFile::exists($depFile)) {
+			require_once $depFile;
+			if(!class_exists($mainClass))
+			{
+				return sprintf('%s not exist.', $className);
+			}
+		} else {
+			return sprintf('%s or %s not exist.', $depFile, $className);
+		}
 
-		// Check if className already exist, else load the appropriate file
-		if (!class_exists($className))
+		// Class aka mainClassSubClass
+		if(!class_exists($className) && JFile::exists($classFile))
 		{
-			$path = NPATH_FRAMEWORK . '/' . strtolower($folder) . '/' . strtolower($subClass) . '.php';
-
-			// Check if file exist, else throw exception
-			if (JFile::exists($path))
+			require_once $classFile;
+			if(!class_exists($className))
 			{
-				require_once $path;
-
-				if (!class_exists($className))
-				{
-					return sprintf('%s not exist.', $className);
-				}
+				return sprintf('%s not exist.', $className);
 			}
-			else
-			{
-				return sprintf('%s not exist.', $path);
-			}
+		} else {
+			return sprintf('%s or %s not exist.', $classFile, $className);
 		}
 	}
 }
