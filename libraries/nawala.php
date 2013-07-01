@@ -47,7 +47,7 @@ if (!class_exists('NFramework'))
  *
  * @return void
  */
-function nimport($key, $dep)
+function nimport($key, $dep = true)
 {
 	return NLoader::_($key, $dep);
 }
