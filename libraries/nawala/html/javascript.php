@@ -2,7 +2,7 @@
 /**
  * @version     5.0.0
  * @package     NAWALA FRAMEWORK
- * @subPackage  NHtmlJSHelper
+ * @subPackage  NHtmlJavaScript
  * @copyright   Copyright (C) 1997 - 2013 by devXive - research and development. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  * @author      devXive <support@devxive.com> - http://devxive.com
@@ -10,7 +10,7 @@
 
 defined('_JEXEC') or die;
 
-abstract class NHtmlJavascript
+abstract class NHtmlJavaScript
 {
 	/**
 	 * @var    array  Array containing information for loaded files
@@ -39,7 +39,7 @@ abstract class NHtmlJavascript
 		}
 
 		// Include Bootstrap framework
-		self::framework();
+		NHtml::loadJsFramework();
 
 		// Attach the function to the document
 		JFactory::getDocument()->addScriptDeclaration(
@@ -78,7 +78,7 @@ abstract class NHtmlJavascript
 		}
 
 		// Include Bootstrap framework
-		self::framework();
+		NHtml::loadJsFramework();
 
 		// Attach the function to the document
 		JFactory::getDocument()->addScriptDeclaration(
