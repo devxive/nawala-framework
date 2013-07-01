@@ -40,7 +40,7 @@ abstract class NHtml
 	 *
 	 * @since   13.0
 	 */
-	public static function loadJsFramework($noConflict = true, $debug = null)
+	public static function loadJsFramework($noConflict = false, $debug = null)
 	{
 		// Only load once
 		if (!empty(self::$loaded[__METHOD__]))
