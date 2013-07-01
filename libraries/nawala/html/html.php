@@ -39,7 +39,7 @@ abstract class NHtml
 	 *
 	 * @since   3.0
 	 */
-	public static function framework($debug = null)
+	public static function loadJsFramework($debug = null)
 	{
 		// Only load once
 		if (!empty(self::$loaded[__METHOD__]))
@@ -74,7 +74,7 @@ abstract class NHtml
 	 *
 	 * @since   3.0
 	 */
-	public static function loadCss($includeMainCss = true, $direction = 'ltr', $attribs = array())
+	public static function loadCssFramework($includeMainCss = true, $direction = 'ltr', $attribs = array())
 	{
 		// Load Bootstrap main CSS
 		if ($includeMainCss)

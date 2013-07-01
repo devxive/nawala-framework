@@ -39,7 +39,7 @@ abstract class NHtmlDatatables
 		}
 
 		// Include Bootstrap framework
-		self::framework();
+		NHtml::loadJsFramework();
 
 		// Base path
 		$path = self::$mediaBasePath;
