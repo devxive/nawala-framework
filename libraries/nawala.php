@@ -30,8 +30,17 @@ if(!defined('DS')) {
 	define('DS', DIRECTORY_SEPARATOR);
 }
 
-// Init NLoader to work in nimport function
-require_once (NPATH_FRAMEWORK . '/core/loader.php');
+// Init NLoader to work in nimport function if necessary.
+if (!class_exists('NLoader'))
+{
+	require_once (NPATH_FRAMEWORK . '/core/loader.php');
+}
+
+// Init the framework version class if necessary.
+if (!class_exists('NFramework'))
+{
+	require_once (NPATH_FRAMEWORK . '/core/version.php');
+}
 
 /**
  * @param  string $path the nawala path to the class to import
@@ -43,12 +52,8 @@ function nimport($key)
 	return NLoader::_($key);
 }
 
-// Import the framework version class if necessary.
-if (!class_exists('NFramework'))
+// Init the factory if necessary.
+if (!class_exists('NFactory'))
 {
-	nimport('core.version', 'once');
+	require_once (NPATH_FRAMEWORK . '/factory.php');
 }
-
-// Init the factory
-require_once (NPATH_FRAMEWORK . '/factory.php');
-
