@@ -38,9 +38,9 @@ require_once (NPATH_FRAMEWORK . '/core/loader.php');
  *
  * @return void
  */
-function nimport($path, $config)
+function nimport($key)
 {
-	return NLoader::import($path, $config);
+	return NLoader::_($key);
 }
 
 // Import the framework version class if necessary.

@@ -35,7 +35,7 @@ class NLoader
 	 *
 	 * @since	13.6
 	 */
-	public static function import($key)
+	public static function _($key)
 	{
 		$key = preg_replace('#[^A-Z0-9_\.]#i', '', $key);
 
@@ -46,11 +46,11 @@ class NLoader
 			$mainClass	= array_shift($parts); // Could be "NHtml"
 			$subClass	= array_shift($parts); // Could be "DataTable"
 		} else {
-			return false;
+			return sprintf('%s is not a valid key.', $key);
 		}
 
 		// Substract the first letter from rawFolder (Makes ie. "Html" from "NHtml")
-		$folder = substr($mainClass, -1, 0);
+		$folder = substr($mainClass, 1);
 
 		// Ensure we fit naming conv. to check if the class have already been loaded.
 		// Like example above: "NHtmlDataTable" which is the abstract class we have in "html/datatable.php".
@@ -68,12 +68,12 @@ class NLoader
 
 				if (!class_exists($className))
 				{
-					return false;
+					return sprintf('%s not exist.', $className);
 				}
 			}
 			else
 			{
-				return false;
+				return sprintf('%s not exist.', $path);
 			}
 		}
 	}
