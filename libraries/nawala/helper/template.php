@@ -13,7 +13,7 @@
 // no direct access
 defined('_NFWRA') or die;
 
-class NTemplateHelper {
+class NHelperTemplate {
 
 	/**
 	 * Stores the JDocument class
