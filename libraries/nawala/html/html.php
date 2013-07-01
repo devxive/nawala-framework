@@ -18,13 +18,13 @@ defined('_NFWRA') or die;
  *
  * @package     Nawala.Framework
  * @subpackage  HTML
- * @since       13.6
+ * @since       13.0
  */
 abstract class NHtml
 {
 	/**
 	 * @var    array  Array containing information for loaded files
-	 * @since  3.0
+	 * @since  13.0
 	 */
 	protected static $loaded = array();
 
@@ -33,22 +33,20 @@ abstract class NHtml
 	 *
 	 * If debugging mode is on an uncompressed version of Bootstrap is included for easier debugging.
 	 *
-	 * @param   mixed  $debug  Is debugging mode on? [optional]
+	 * @param   boolean	$noConflict  True to load jQuery in noConflict mode [optional]
+	 * @param   mixed	$debug  Is debugging mode on? [optional]
 	 *
 	 * @return  void
 	 *
-	 * @since   3.0
+	 * @since   13.0
 	 */
-	public static function loadJsFramework($debug = null)
+	public static function loadJsFramework($noConflict = true, $debug = null)
 	{
 		// Only load once
 		if (!empty(self::$loaded[__METHOD__]))
 		{
 			return;
 		}
-
-		// Load jQuery
-		JHtml::_('jquery.framework');
 
 		// If no debugging value is set, use the configuration setting
 		if ($debug === null)
@@ -57,7 +55,18 @@ abstract class NHtml
 			$debug = (boolean) $config->get('debug');
 		}
 
-		JHtml::_('script', 'jui/bootstrap.min.js', false, true, false, false, $debug);
+		// Load jQuery
+//		JHtml::_('jquery.framework');
+		JHtml::_('script', 'nawala/jquery.min.js', false, true, false, false, $debug);
+
+		// Check if we are loading in noConflict
+		if ($noConflict)
+		{
+			JHtml::_('script', 'nawala/jquery-noconflict.js', false, true, false, false, false);
+		}
+
+		JHtml::_('script', 'nawala/bootstrap.min.js', false, true, false, false, $debug);
+
 		self::$loaded[__METHOD__] = true;
 
 		return;
@@ -72,7 +81,7 @@ abstract class NHtml
 	 *
 	 * @return  void
 	 *
-	 * @since   3.0
+	 * @since   13.0
 	 */
 	public static function loadCssFramework($includeMainCss = true, $direction = 'ltr', $attribs = array())
 	{
@@ -81,7 +90,6 @@ abstract class NHtml
 		{
 			JHtml::_('stylesheet', 'jui/bootstrap.min.css', $attribs, true);
 			JHtml::_('stylesheet', 'jui/bootstrap-responsive.min.css', $attribs, true);
-			JHtml::_('stylesheet', 'jui/bootstrap-extended.css', $attribs, true);
 		}
 
 		// Load Bootstrap RTL CSS
