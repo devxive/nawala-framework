@@ -84,8 +84,8 @@ class NLoader
 		// Class aka mainClassSubClass
 		if(!class_exists($className))
 		{
-			if(JFile::exists($depFile)) {
-			require_once $classFile;
+			if(JFile::exists($classFile)) {
+				require_once $classFile;
 			} else {
 				return sprintf('%s not exist.', $classFile);
 			}
@@ -94,8 +94,6 @@ class NLoader
 			{
 				return sprintf('%s not exist.', $className);
 			}
-		} else {
-			return sprintf('%s or %s not exist.', $classFile, $className);
 		}
 	}
 }
