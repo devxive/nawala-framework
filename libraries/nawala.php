@@ -47,9 +47,9 @@ if (!class_exists('NFramework'))
  *
  * @return void
  */
-function nimport($key)
+function nimport($key, $dep)
 {
-	return NLoader::_($key);
+	return NLoader::_($key, $dep);
 }
 
 // Init the factory if necessary.
