@@ -1,0 +1,73 @@
+#gritter-notice-wrapper {
+	position:fixed;
+	top:20px;
+	right:20px;
+	width:350px;
+	z-index:9999;
+}
+
+.gritter-item-wrapper {
+	box-shadow:0 5px 15px rgba(0, 0, 0, 0.3);
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	-ms-border-radius: 10px;
+	-o-border-radius: 10px;
+	border-radius: 10px;
+}
+
+.gritter-item-wrapper .media-body p {
+	font-size: 12px;
+	padding-top: 5px;
+}
+
+.gritter-item-wrapper.alert-inverse,
+.gritter-item-wrapper.alert-inverse h4,
+.gritter-close {
+	color: #454545;
+	opacity: 0.5;
+	font-weight: normal;
+	text-shadow: none;
+}
+
+.gritter-close:hover {
+	opacity: 1;
+}
+
+/* Support for semi transparent gritter backgrounds */
+.gritter-item-wrapper.alert-success {
+	background: rgba(232, 240, 216, 0.8);
+	border: 1px solid rgba(214, 233, 198, 0.9);
+}
+.gritter-item-wrapper.alert-info {
+	background: rgba(217, 237, 247, 0.8);
+	border: 1px solid rgba(188, 232, 241, 0.9);
+}
+.gritter-item-wrapper.alert-warning {
+	background: rgba(252, 248, 227, 0.8);
+	border: 1px solid rgba(251, 238, 213, 0.9);
+}
+.gritter-item-wrapper.alert-error {
+	background: rgba(242, 222, 222, 0.8);
+	border: 1px solid rgba(238, 211, 215, 0.9);
+}
+.gritter-item-wrapper.alert-inverse {
+	background: rgba(0, 0, 0, 0.5);
+	border: 1px solid rgba(0, 0, 0, 0.6);
+}
+
+/* IE7/8 Support for semi transparent gritter backgrounds */
+.gritter-item-wrapper.alert-success {
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#EA59834B', endColorstr='#EA59834B',GradientType=0 ) !important; /* IE6-9 */
+}
+.gritter-item-wrapper.alert-info {
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#EA315185', endColorstr='#EA315185',GradientType=0 ) !important; /* IE6-9 */
+}
+.gritter-item-wrapper.alert-warning {
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#EABE701F', endColorstr='#EABE701F',GradientType=0 ) !important; /* IE6-9 */
+}
+.gritter-item-wrapper.alert-error {
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#EA992812', endColorstr='#EA992812',GradientType=0 ) !important; /* IE6-9 */
+}
+.gritter-item-wrapper.alert-inverse {
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#EA000000', endColorstr='#EA000000',GradientType=0 ) !important; /* IE6-9 */
+}
