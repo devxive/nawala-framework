@@ -16,13 +16,13 @@ defined('_NFWRA') or die;
 // Set the Nawala Framework root path as a constant if necessary.
 if (!defined('NPATH_FRAMEWORK'))
 {
-	define('NPATH_FRAMEWORK', JPATH_BASE . '/libraries/nawala');
+	define('NPATH_FRAMEWORK', JPATH_SITE . '/libraries/nawala');
 }
 
 // Set the Nawala Framework root path as a constant if necessary.
 if (!defined('NPATH_MEDIA'))
 {
-	define('NPATH_MEDIA', JPATH_BASE . '/media/nawala');
+	define('NPATH_MEDIA', JPATH_SITE . '/media/nawala');
 }
 
 // Define legacy directory separator as a constant if not exist
