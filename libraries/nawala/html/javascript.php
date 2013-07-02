@@ -188,7 +188,7 @@ abstract class NHtmlJavaScript
 	 *
 	 * @since   5.0
 	 */
-	public function setTextLimit($selector = 'limited', $chars = 100)
+	public function setTextLimit($selector = '.limited', $chars = 100)
 	{
 		$sig = md5(serialize(array($selector, $chars)));
 
@@ -206,12 +206,14 @@ abstract class NHtmlJavaScript
 
 		// Attach the function to the document
 		JFactory::getDocument()->addScriptDeclaration(
-			"jQuery('textarea[class*=" . $selector . "]').each(function() {
-				var limit = parseInt($(this).attr('data-maxlength')) || " . $chars . ";
-				$(this).inputlimiter({
-					'limit': limit,
-					remText: '%n character%s remaining...',
-					limitText: 'max allowed : %n.'
+			"jQuery(document).ready(function() {
+				$('" . $selector . "').each(function() {
+					var limit = parseInt($(this).attr('data-maxlength')) || " . $chars . ";
+					$(this).inputlimiter({
+						'limit': limit,
+						remText: '%n character%s remaining...',
+						limitText: 'max allowed : %n.'
+					});
 				});
 			});\n"
 		);
@@ -374,6 +376,84 @@ abstract class NHtmlJavaScript
 			"jQuery(document).ready(function() {
 				jQuery('" . $selector . "').popover(" . $options . ");
 			});"
+		);
+
+		self::$loaded[__METHOD__][$sig] = true;
+
+		return;
+	}
+
+	/**
+	 * Add javascript support for bootstrap loading buttons
+	 *
+	 * @param	string		$selector	Common id for the button
+	 * @param	string		$time		time in milliseconds
+	 *
+	 * @return  void
+	 *
+	 * @since   5.0
+	 */
+	public function setLoadingButton($selector = '#loading-btn', $time = 5000)
+	{
+		$sig = md5(serialize(array($selector, $time)));
+
+		// Only load once
+		if (isset(self::$loaded[__METHOD__][$sig]))
+		{
+			return;
+		}
+
+		// Include JS frameworks
+		NHtml::loadJsFramework();
+
+		// Attach the function to the document
+		JFactory::getDocument()->addScriptDeclaration(
+			"jQuery('" . $selector . "').on('click', function () {
+				$('" . $selector . "').addClass("btn-warning");
+				var btn = $(this);
+				btn.button('loading')
+				setTimeout(function () {
+					$('" . $selector . "').removeClass('btn-warning'),
+					btn.button('reset')
+				}, " . $time . ")
+			});\n"
+		);
+
+		self::$loaded[__METHOD__][$sig] = true;
+
+		return;
+	}
+
+	/**
+	 * Add javascript support to prevent enter keypress in forms or form elements
+	 * 	Prevent submit on enter (keycode 13) event in input fields. To use all form fields, use the form id (ie: #form-contact)
+	 *
+	 * @param	string		$selector	Common id for the form or the formfields
+	 *
+	 * @return  void
+	 *
+	 * @since   5.0
+	 */
+	public function setPreventFormSubmitByKey($selector = 'input[type]', $key = 13)
+	{
+		$sig = md5(serialize(array($selector, $key)));
+
+		// Only load once
+		if (isset(self::$loaded[__METHOD__][$sig]))
+		{
+			return;
+		}
+
+		// Include JS frameworks
+		NHtml::loadJsFramework();
+
+		// Attach the function to the document
+		JFactory::getDocument()->addScriptDeclaration(
+			"jQuery(document).ready(function() {
+				jQuery('" . $selector . "').bind('keypress keydown keyup', function(e) {
+					if(e.keyCode == " . $key . ") { e.preventDefault(); }
+				});
+			});\n"
 		);
 
 		self::$loaded[__METHOD__][$sig] = true;
