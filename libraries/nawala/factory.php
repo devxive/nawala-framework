@@ -2,7 +2,7 @@
 /**
   * @info		$Id$ - $Revision$
   * @package		$Nawala.Framework $
-  * @subpackage	Framework
+  * @subpackage	NFactory
   * @check		$Date$ || $Result: devXive AntiMal...OK, nothing found $
   * @author		$Author$ @ devXive - research and development <support@devxive.com>
   * @copyright	Copyright (C) 1997 - 2013 devXive - research and development (http://www.devxive.com)
