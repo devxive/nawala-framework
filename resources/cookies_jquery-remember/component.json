@@ -1,0 +1,10 @@
+{
+  "name": "jquery.remember",
+  "version": "0.1.1",
+  "main": [
+    "./jquery.remember.js"
+  ],
+  "dependencies": {
+    "jquery": ">=1.6.3"
+  }
+}
