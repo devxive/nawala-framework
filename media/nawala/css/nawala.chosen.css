@@ -1,5 +1,6 @@
 .chzn-container {
 	font-size: 14px;
+	background-color: #fff
 }
 
 .chzn-container + .help-inline {
