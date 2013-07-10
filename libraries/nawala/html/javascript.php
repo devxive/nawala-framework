@@ -87,6 +87,11 @@ abstract class NHtmlJavaScript
 				$('." . $selector . "').hide();
 				$('#" . $operator . "').click(function () {
 					$('." . $selector . "').slideToggle('fast');
+					if ($('#" . $operator . "').hasClass('active')) {
+						$('#" . $operator . "').removeClass('active');
+					} else {
+						$('#" . $operator . "').addClass('active');
+					}
 				});
 			});\n"
 		);
@@ -782,6 +787,129 @@ abstract class NHtmlJavaScript
 		return $results;
 	}
 
+	/**
+	 * Add javascript support for moment, a js date library for parsing, validating, manipulating and formatting dates
+	 *
+	 * @param	string		$selector	
+	 *
+	 * @return  void
+	 *
+	 * @since   8.0
+	 */
+	public function loadMoment($selector = '.ntime-fromnow', $debug = false)
+	{
+		$sig = md5(serialize(array($selector)));
+
+		// Only load once
+		if (isset(self::$loaded[__METHOD__][$sig]))
+		{
+			return;
+		}
+
+		// Include JS framework
+		NHtml::loadJsFramework();
+
+		// Include dependencies
+		self::dependencies('jquery.moment');
+		self::dependencies('locales.de');
+
+		// Attach the function to the document
+		JFactory::getDocument()->addScriptDeclaration("
+			jQuery(document).ready(function() {
+				var dataTime;
+				var dataCalender;
+				var dataContentPrefix;
+				var dataContentSuffix;
+				var dataIconClass;
+
+				initTableDataTime();
+
+				function initTableDataTime() {
+					$('" . $selector . "').each(function() {
+						dataTime = $(this).data('time');
+						dataCalendar = $(this).data('calendar');
+
+						dataContentPrefix = $(this).data('content-prefix') ? '<b>' + $(this).data('content-prefix') + '</b>' : '';
+						dataContentSuffix = $(this).data('content-suffix') ? $(this).data('content-suffix') : '';
+						dataIconClass = $(this).data('icon-class') ? '<i class=\'' + $(this).data('icon-class') + '\'></i> ' : '';
+
+						if (dataTime) {
+							dateTime = moment( dataTime ).fromNow();
+						} else if (dataCalendar) {
+							dateTime = moment( dataCalendar ).calendar();
+						} else {
+							dateTime = 'N/A';
+						}
+
+						$(this).html( dataIconClass + dataContentPrefix + ' <span>' + dateTime + '</span> ' + dataContentSuffix );
+
+						console.log( dateTime );
+					});
+				}
+
+				setInterval(initTableDataTime, 60000);
+
+				$('a').on( 'click', function() {
+					initTableDataTime();
+					console.log( 'clicky :)' );
+				});
+			});\n"
+		);
+
+		self::$loaded[__METHOD__][$sig] = true;
+
+		return;
+	}
+
+	/**
+	 * Add javascript support for typeahead like search
+	 *
+	 * @param	string		$selector	
+	 *
+	 * @return  void
+	 *
+	 * @since   8.0
+	 */
+	public function loadTypeahead($selector = '#typeahead-search', $output = '#search-query', $url = 'index.php', $debug = false)
+	{
+		$sig = md5(serialize(array($selector, $output, $url)));
+
+		// Only load once
+		if (isset(self::$loaded[__METHOD__][$sig]))
+		{
+			return;
+		}
+
+		// Include JS framework
+		NHtml::loadJsFramework();
+
+		// Debug?
+		if($debug) {
+			$jsdebug = 'console.log (search_query);';
+		} else {
+			$jsdebug = null;
+		}
+
+		// Attach the function to the document
+		JFactory::getDocument()->addScriptDeclaration("
+			jQuery(document).ready(function() {
+				$('" . $selector . "').keyup(function() {
+					var search_query = $(this).val();
+
+					" . $jsdebug . "
+
+					$.post('" . $url . "', {typeahead_search : search_query}, function(searchq) {
+						$('" . $output . "').html(searchq);
+					});
+				});
+			});\n"
+		);
+
+		self::$loaded[__METHOD__][$sig] = true;
+
+		return;
+	}
+
 	 /*
 	 * Load dependencies for this class
 	 *
@@ -843,6 +971,16 @@ abstract class NHtmlJavaScript
 			JHtml::_('stylesheet', 'nawala/jquery.chosen.min.css', false, true);
 			JHtml::_('stylesheet', 'nawala/nawala.chosen.css', false, true);
 			JHtml::_('script', 'nawala/jquery.chosen.min.js', false, true, false, false, $debug);
+		}
+
+		if($type === 'jquery.moment')
+		{
+			JHtml::_('script', 'nawala/jquery.moment.min.js', false, true, false, false, $debug);
+		}
+
+		if($type === 'locales.de')
+		{
+			JHtml::_('script', 'nawala/locales/jquery.moment.de.min.js', false, true, false, false, $debug);
 		}
 
 		self::$loaded[__METHOD__][$sig] = true;
