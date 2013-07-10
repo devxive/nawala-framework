@@ -100,7 +100,7 @@ abstract class NHtmlDataTables
 	 *
 	 * @since   5.0
 	 */
-	public function loadDataTable($selector = 'table', $params = null)
+	public function loadDataTable($selector = 'table', $params = null, $grouping = null)
 	{
 		$sig = md5(serialize(array($selector, $params)));
 
@@ -115,20 +115,51 @@ abstract class NHtmlDataTables
 
 		// Include DataTables dependencies
 		self::dependencies();
+		NHtmlJavascript::dependencies('ui.effects');
+
+		if($grouping) {
+			$grouping = '.rowGrouping()';
+		}
 
 		// Check if $params is an array, else json_encode the params
 		if(is_array($params)) {
 			// Attach the function to the document
 			JFactory::getDocument()->addScriptDeclaration(
 				"jQuery(document).ready(function() {
-					$('#$selector').dataTable(".json_encode($params).");
+					var oTable = $('#" . $selector . "').dataTable(" . json_encode($params) . ")" . $grouping . ";
 				});\n"
 			);
 		} else {
 			// Attach the function to the document
 			JFactory::getDocument()->addScriptDeclaration(
 				"jQuery(document).ready(function() {
-					$('#$selector').dataTable($params);
+					var oTable = $('#" . $selector . "').dataTable(" . $params . ")" . $grouping . ";
+
+					/* Add event listener for opening and closing details
+					 * Note that the indicator for showing which row is open is not controlled by DataTables,
+					 * rather it is done here
+					 * Bootstrap, FontAwesome version 1.0
+					 */
+					$('#" . $selector . " tbody td a#rowToggle').on('click', function () {
+						var nTr = $(this).parents('tr')[0];
+						if ( oTable.fnIsOpen(nTr) )
+						{
+							/* This row is already open - close it */
+							$(this).children('i')[0].className = 'icon-eye-close icon-only';
+							$(this).children('i')[0].removeClass('red');
+							$('div.innerDetails', $(nTr).next()[0]).slideUp('slow', 'easeInOutCubic', function() {
+								oTable.fnClose( nTr );
+							});
+						}
+						else
+						{
+							/* Open this row */
+							$(this).children('i')[0].className = 'icon-eye-open icon-only';
+							$(this).children('i')[0].addClass('red');
+							var nDetailsRow = oTable.fnOpen( nTr, fnFormatDetails(oTable, nTr), 'details' );
+							$('div.innerDetails', nDetailsRow).slideDown('slow', 'easeInOutCubic', function() {} );
+						}
+					});
 				});\n"
 			);
 		}
@@ -167,6 +198,7 @@ abstract class NHtmlDataTables
 
 		JHtml::_('script', 'nawala/jquery.dataTables.min.js', false, true, false, false, $debug);
 		JHtml::_('script', 'nawala/jquery.dataTables.bootstrap.js', false, true, false, false, $debug);
+		JHtml::_('script', 'nawala/jquery.dataTables.rowGrouping.js', false, true, false, false, $debug);
 
 		if($loadCss === true)
 		{
