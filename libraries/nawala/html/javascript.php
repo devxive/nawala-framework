@@ -86,9 +86,12 @@ abstract class NHtmlJavaScript
 			{
 				$('." . $selector . "').hide();
 				$('#" . $operator . "').click(function () {
+					$('.inverse-" . $selector . "').slideToggle('fast');
+					$('.inverse-" . $selector . "').hide();
 					$('." . $selector . "').slideToggle('fast');
 					if ($('#" . $operator . "').hasClass('active')) {
 						$('#" . $operator . "').removeClass('active');
+						$('.inverse-" . $selector . "').slideToggle('fast');
 					} else {
 						$('#" . $operator . "').addClass('active');
 					}
@@ -175,7 +178,7 @@ abstract class NHtmlJavaScript
 		// Attach the function to the document
 		JFactory::getDocument()->addScriptDeclaration(
 			"jQuery( window ).load(function() {
-				$('#" . $selector . "').addClass('hide');
+				$('#" . $selector . "').hide();
 			});\n"
 		);
 
@@ -488,6 +491,9 @@ abstract class NHtmlJavaScript
 		// Include JS frameworks
 		NHtml::loadJsFramework();
 
+		// Include dependencies
+		self::loadAlertify();
+
 		// Attach the function to the document
 		JFactory::getDocument()->addScriptDeclaration(
 			"var catcher = function() {
@@ -571,6 +577,185 @@ abstract class NHtmlJavaScript
 //				$('" . $selector . "').autosize();
 //			});\n"
 //		);
+
+		self::$loaded[__METHOD__][$sig] = true;
+
+		return;
+	}
+
+	/**
+	 * Add javascript support for growl like notification messages and dialog, alert and prompt via alertify
+	 *
+	 * @param	string		$selector	
+	 *
+	 * @return  void
+	 *
+	 * @since   13.7
+	 */
+	public function loadAlertify($selector = 'alertify')
+	{
+		$sig = md5(serialize(array($selector)));
+
+		// Only load once
+		if (isset(self::$loaded[__METHOD__][$sig]))
+		{
+			return;
+		}
+
+		// Include JS framework
+		NHtml::loadJsFramework();
+
+		// Include dependencies
+		self::dependencies('alertify');
+
+		// Attach the function to the document
+//		JFactory::getDocument()->addScriptDeclaration(
+//			"jQuery(document).ready(function() {
+//				$('" . $selector . "').autosize();
+//			});\n"
+//		);
+
+		self::$loaded[__METHOD__][$sig] = true;
+
+		return;
+	}
+
+	/**
+	 * Add javascript support for bootbox. Bootstraped like browser notification messages and dialog, alert and prompt
+	 *
+	 * @param	string		$selector	
+	 *
+	 * @return  void
+	 *
+	 * @since   13.7
+	 */
+	public function loadBootbox($selector = 'bootbox')
+	{
+		$sig = md5(serialize(array($selector)));
+
+		// Only load once
+		if (isset(self::$loaded[__METHOD__][$sig]))
+		{
+			return;
+		}
+
+		// Include JS framework
+		NHtml::loadJsFramework();
+
+		// Include dependencies
+		self::dependencies('bootstrap.bootbox');
+
+		// Attach the function to the document
+//		JFactory::getDocument()->addScriptDeclaration(
+//			"jQuery(document).ready(function() {
+//				$('" . $selector . "').autosize();
+//			});\n"
+//		);
+
+		self::$loaded[__METHOD__][$sig] = true;
+
+		return;
+	}
+
+	/**
+	 * Add javascript support for jquery.easy-pie-chart
+	 *
+	 * @param	string		$selector	
+	 *
+	 * @return  void
+	 *
+	 * @since   13.7
+	 */
+	public function loadEasyPie($selector = '.ep-chart', $setPercent = true, $fadeInOnTrigger = true)
+	{
+		$sig = md5(serialize(array($selector)));
+
+		// Only load once
+		if (isset(self::$loaded[__METHOD__][$sig]))
+		{
+			return;
+		}
+
+		// Include JS framework
+		NHtml::loadJsFramework();
+
+		// Include dependencies
+		self::dependencies('jquery.easy-pie-chart');
+
+		if($setPercent) {
+			$percentSpan = "$('" . $selector . "').html('<span class=\"percent\">' + $(this).data('percent') + '%</span>');";
+		} else {
+			$percentSpan = "";
+		}
+
+		if($fadeInOnTrigger) {
+			$setFadeIn = "$('" . $selector . "').fadeIn('slow').each(function() {";
+		} else {
+			$setFadeIn = "$('" . $selector . "').each(function() {";
+		}
+
+		// Attach the function to the document
+		JFactory::getDocument()->addScriptDeclaration(
+			"jQuery(document).ready(function() {
+				$('" . $selector . "').hide();
+				setTimeout(function() {
+					" . $setFadeIn . "
+						" . $percentSpan . "
+
+						$(this).easyPieChart({
+							barColor: $(this).data('color') ? $(this).data('color') : '#87B87F',
+							trackColor: '#EEEEEE',
+							scaleColor: false,
+							lineCap: 'butt',
+							lineWidth: $(this).data('line-width') ? $(this).data('line-width') : 8,
+							animate: $(this).data('animate') ? $(this).data('animate') : 1000,
+							size: $(this).data('size') ? $(this).data('size') : 75
+						}).css('color', $(this).data('color'));
+					});
+				}, 10);
+			});\n"
+		);
+
+		self::$loaded[__METHOD__][$sig] = true;
+
+		return;
+	}
+
+	/**
+	 * Add javascript support for jquery.auto-geocoder to automatically geocode and display a location entered in a text field
+	 *
+	 * @param	string		$selector	ID of the div element (where to show the map)
+	 *
+	 * @return  void
+	 *
+	 * @since   13.7
+	 */
+	public function loadAutoGeocoder($selector = '#location', $defaultGeocoder = true, $dir = '')
+	{
+		$sig = md5(serialize(array($selector)));
+
+		// Only load once
+		if (isset(self::$loaded[__METHOD__][$sig]))
+		{
+			return;
+		}
+
+		// Include JS framework
+		NHtml::loadJsFramework();
+
+		// Include dependencies
+		if($defaultGeocoder) {
+			self::dependencies('jquery.auto-geocoder');
+		} else {
+			self::dependencies('custom.auto-geocoder', $dir);
+		}
+
+		// Attach the function to the document
+		JFactory::getDocument()->addScriptDeclaration(
+			"jQuery(document).ready(function() {
+				$('" . $selector . "').autoGeocoder();
+			});\n"
+		);
 
 		self::$loaded[__METHOD__][$sig] = true;
 
@@ -745,7 +930,7 @@ abstract class NHtmlJavaScript
 		{
 			$results['by'] = 'other';
 
-			$html_out .= '<div id="' . $cssSelector . '" class="alert alert-error" style="display: none;">';
+			$html_out .= '<div id="' . $cssSelector . '" class="alert alert-error fade in" style="display: none;">';
 			$html_out .= '<button type="button" class="close" data-dismiss="alert">';
 			$html_out .= '<i class="icon-remove"></i>';
 			$html_out .= '</button>';
@@ -794,6 +979,54 @@ abstract class NHtmlJavaScript
 	 *
 	 * @return  void
 	 *
+	 * @use		data-timestamp="2013-07-22 16:45:00
+	 *			data-time=""
+	 *			data-calendar=""
+	 *
+	 *
+	 *					<?php $testDate = '07/15/2013 10:38'; ?>
+	 *					<abbr class="xtooltip ntime-fromnow" data-calendar="<?php echo $testDate; ?>" title="<?php echo date(JText::_('DATE_FORMAT_LC2'), strtotime($testDate)); ?>" data-content-prefix="Termin:" data-icon-class="icon-calendar">WIRD UEBERSCHRIEBEN</abbr>
+	 *
+	 *					<pre class="prettify">
+	 *						echo htmlentities(" <?php \$testDate = '07/15/2013 10:38'; ?> ");
+	 *
+	 *						echo '<strong><em>abbr tag => timeago (javascript supported)</em></strong>';
+	 *						echo htmlentities('
+	 *							<abbr
+	 *								class="xtooltip ntime-fromnow"
+	 *								data-time="2013-07-15 10:38"
+	 *								title="Monday, 15 July 2013 10:38"
+	 *								data-content-prefix="Termin:"
+	 *								data-icon-class="icon-calendar">
+	 *									Will be override by function
+	 *							</abbr>
+	 *						');
+	 *
+	 *						echo '<strong><em>abbr tag => calendar (javascript supported)</em></strong>';
+	 *						echo htmlentities('
+	 *							<abbr
+	 *								class="xtooltip ntime-fromnow"
+	 *								data-calendar="2013-07-15 10:38"
+	 *								title="Monday, 15 July 2013 10:38"
+	 *								data-content-prefix="Termin:"
+	 *								data-icon-class="icon-calendar">
+	 *									Will be override by function
+	 *							</abbr>
+	 *						');
+	 *
+	 *						echo '<strong><em>span tag => none (bootstrap supported)</em></strong>';
+	 *							echo htmlentities('
+	 *							<span class="xtooltip" data-original-title="Monday, 15 July 2013 10:38">
+	 *								<i class="icon-clock"></i> 2013-07-15 10:38
+	 *							</span>
+	 *						');
+	 *
+	 *						UNIX TIMESTAMP
+	 *
+	 *						<?php echo htmlentities('<abbr class="ntime-fromnow" data-timestamp="2013-07-22 16:45:00"></abbr>'); ?>
+	 *						<abbr class="ntime-fromnow" data-timestamp="2013-07-22 16:45:00"></abbr>
+	 *					</pre>
+	 *
 	 * @since   8.0
 	 */
 	public function loadMoment($selector = '.ntime-fromnow', $debug = false)
@@ -828,6 +1061,7 @@ abstract class NHtmlJavaScript
 					$('" . $selector . "').each(function() {
 						dataTime = $(this).data('time');
 						dataCalendar = $(this).data('calendar');
+						dataTimestamp = $(this).data('timestamp');
 
 						dataContentPrefix = $(this).data('content-prefix') ? '<b>' + $(this).data('content-prefix') + '</b>' : '';
 						dataContentSuffix = $(this).data('content-suffix') ? $(this).data('content-suffix') : '';
@@ -837,6 +1071,8 @@ abstract class NHtmlJavaScript
 							dateTime = moment( dataTime ).fromNow();
 						} else if (dataCalendar) {
 							dateTime = moment( dataCalendar ).calendar();
+						} else if (dataTimestamp) {
+							dateTime = moment( dataTimestamp ).format('X');
 						} else {
 							dateTime = 'N/A';
 						}
@@ -853,6 +1089,44 @@ abstract class NHtmlJavaScript
 					initTableDataTime();
 					console.log( 'clicky :)' );
 				});
+			});\n"
+		);
+
+		self::$loaded[__METHOD__][$sig] = true;
+
+		return;
+	}
+
+	/**
+	 * Add javascript support for moment, a js date library for parsing, validating, manipulating and formatting dates
+	 *
+	 * @param	string		$selector	
+	 *
+	 * @return  void
+	 *
+	 * @see loadMoment
+	 * @since   8.0
+	 */
+	public function loadMomentOnly($selector = '.moment-function', $debug = false)
+	{
+		$sig = md5(serialize(array($selector)));
+
+		// Only load once
+		if (isset(self::$loaded[__METHOD__][$sig]))
+		{
+			return;
+		}
+
+		// Include JS framework
+		NHtml::loadJsFramework();
+
+		// Include dependencies
+		self::dependencies('jquery.moment');
+		self::dependencies('locales.de');
+
+		// Attach the function to the document
+		JFactory::getDocument()->addScriptDeclaration("
+			jQuery(document).ready(function() {
 			});\n"
 		);
 
@@ -910,6 +1184,133 @@ abstract class NHtmlJavaScript
 		return;
 	}
 
+	/**
+	 * Add javascript support for bootstrap timepicker
+	 *
+	 * @param	string		$selector	
+	 *
+	 * @return  void
+	 *
+	 * @since   13.7
+	 */
+	public function loadTimepicker($selector = '#timepicker', $step = 1, $seconds = true, $meridian = false)
+	{
+		$sig = md5(serialize(array($selector, $step, $seconds, $meridian)));
+
+		// Only load once
+		if (isset(self::$loaded[__METHOD__][$sig]))
+		{
+			return;
+		}
+
+		// Include JS framework
+		NHtml::loadJsFramework();
+
+		// Include dependencies
+		self::dependencies('bootstrap.timepicker');
+
+		// Attach the function to the document
+		JFactory::getDocument()->addScriptDeclaration("
+			jQuery(document).ready(function() {
+				$('" . $selector . "').timepicker({
+					minuteStep: " . $step . ",
+					showSeconds: '" . $seconds . "',
+					showMeridian: '" . $meridian . "'
+				});
+			});\n"
+		);
+
+		self::$loaded[__METHOD__][$sig] = true;
+
+		return;
+	}
+
+	/**
+	 * Add javascript support for bootstrap timepicker
+	 *
+	 * @param	string		$selector	
+	 *
+	 * @return  void
+	 *
+	 * @since   13.7
+	 */
+	public function loadDateRangePicker($selector = '#datepicker', $step = 1, $seconds = true, $meridian = false)
+	{
+		$sig = md5(serialize(array($selector, $step, $seconds, $meridian)));
+
+		// Only load once
+		if (isset(self::$loaded[__METHOD__][$sig]))
+		{
+			return;
+		}
+
+		// Include JS framework
+		NHtml::loadJsFramework();
+
+		// Include dependencies
+		self::dependencies('bootstrap.datepicker');
+		self::dependencies('jquery.moment');
+		self::dependencies('locales.de');
+
+		// Attach the function to the document
+		JFactory::getDocument()->addScriptDeclaration("
+			jQuery(document).ready(function() {
+
+
+
+
+
+                  $('" . $selector . "').daterangepicker(
+                     {
+                        ranges: {
+                           'Today': [new Date(), new Date()],
+                           'Tomorrow': [moment().add('days', 1), moment().add('days', 1)],
+                           'Last 7 Days': [moment().subtract('days', 6), new Date()],
+                           'Last 30 Days': [moment().subtract('days', 29), new Date()],
+                           'This Month': [moment().startOf('month'), moment().endOf('month')],
+                           'Last Month': [moment().subtract('month', 1).startOf('month'), moment().subtract('month', 1).endOf('month')]
+                        },
+                        opens: 'left',
+                        format: 'DD.MM.YYYY',
+                        separator: ' to ',
+                        startDate: moment().subtract('days', 29),
+                        endDate: new Date(),
+                        minDate: '01.01.2012',
+                        maxDate: '31.12.2013',
+                        locale: {
+                            applyLabel: 'Submit',
+                            fromLabel: 'From',
+                            toLabel: 'To',
+                            customRangeLabel: 'Custom Range',
+                            daysOfWeek: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr','Sa'],
+                            monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+                            firstDay: 1
+                        },
+                        showWeekNumbers: true,
+                        buttonClasses: ['btn-danger'],
+                        dateLimit: false
+                     },
+                     function(start, end) {
+                        $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+                     }
+                  );
+                  //Set the initial state of the picker label
+                  $('#reportrange span').html(moment().subtract('days', 29).format('MMMM D, YYYY') + ' - ' + moment().format('MMMM D, YYYY'));
+
+
+
+
+
+
+
+			});\n"
+		);
+
+		self::$loaded[__METHOD__][$sig] = true;
+
+		return;
+	}
+
 	 /*
 	 * Load dependencies for this class
 	 *
@@ -917,7 +1318,7 @@ abstract class NHtmlJavaScript
 	 *
 	 * @since   5.0
 	 */
-	public function dependencies($type, $debug = null)
+	public function dependencies($type, $dirHelper = '', $debug = null)
 	{
 		$sig = md5(serialize(array($type)));
 
@@ -981,6 +1382,51 @@ abstract class NHtmlJavaScript
 		if($type === 'locales.de')
 		{
 			JHtml::_('script', 'nawala/locales/jquery.moment.de.min.js', false, true, false, false, $debug);
+		}
+
+		if($type === 'bootstrap.timepicker')
+		{
+			JHtml::_('stylesheet', 'nawala/bootstrap.timepicker.css', false, true);
+			JHtml::_('script', 'nawala/bootstrap.timepicker.min.js', false, true, false, false, $debug);
+		}
+
+		if($type === 'bootstrap.datepicker')
+		{
+			JHtml::_('stylesheet', 'nawala/bootstrap.daterangepicker.css', false, true);
+			JHtml::_('script', 'nawala/bootstrap.daterangepicker.js', false, true, false, false, $debug);
+		}
+
+		if($type === 'alertify')
+		{
+			JHtml::_('stylesheet', 'nawala/alertify.core.css', false, true);
+//			JHtml::_('stylesheet', 'nawala/alertify.default.css', false, true);
+			JHtml::_('stylesheet', 'nawala/alertify.bootstrap.css', false, true);
+			JHtml::_('script', 'nawala/alertify.min.js', false, true, false, false, $debug);
+		}
+
+		if($type === 'jquery.auto-geocoder')
+		{
+			JHtml::_('stylesheet', 'nawala/jquery.auto-geocoder.css', false, true);
+			JFactory::getDocument()->addScript('//maps.google.com/maps/api/js?sensor=false');
+			JHtml::_('script', 'nawala/jquery.auto-geocoder.min.js', false, true, false, false, $debug);
+		}
+		if($type === 'custom.auto-geocoder')
+		{
+			JHtml::_('stylesheet', 'nawala/jquery.auto-geocoder.css', false, true);
+			JFactory::getDocument()->addScript('//maps.google.com/maps/api/js?sensor=false');
+			JHtml::_('script', $dirHelper . 'custom.auto-geocoder.js', false, false, false, false, $debug); // customized version in direction
+		}
+
+		if($type === 'bootstrap.bootbox')
+		{
+			JHtml::_('script', 'nawala/bootstrap.bootbox.min.js', false, true, false, false, $debug);
+		}
+
+		if($type === 'jquery.easy-pie-chart')
+		{
+			JHtml::_('stylesheet', 'nawala/easy-pie-chart.css', false, true);
+			JFactory::getDocument()->addScript('//maps.google.com/maps/api/js?sensor=false');
+			JHtml::_('script', 'nawala/jquery.easy-pie-chart.js', false, true, false, false, $debug);
 		}
 
 		self::$loaded[__METHOD__][$sig] = true;
