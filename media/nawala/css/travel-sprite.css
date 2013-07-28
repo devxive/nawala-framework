@@ -1,0 +1,29 @@
+/* google like travel sprite */
+.mode-icon {
+	background: rgba(0, 0, 0, 0) url('/media/nawala/img/travel-sprite.png') no-repeat 0 0;
+	background-size: 120px 15px;
+	width: 15px;
+	height: 15px;
+	vertical-align: middle;
+	margin: 5px 10px;
+}
+
+.directions .drive-icon {
+	background-position:	-48px 0
+}
+
+.directions .transit-icon {
+	background-position:	-96px 0
+}
+
+.directions .walk-icon {
+	background-position:	-24px 0
+}
+
+.directions .bicycle-icon {
+	background-position:	-72px 0
+}
+
+.directions .airplane-icon {
+	background-position:	-5px 0
+}
