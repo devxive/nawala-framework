@@ -213,4 +213,71 @@ abstract class NItemHelper
 			return $id;
 		}
 	}
+
+	/*
+	 * Global Method to get name fields by an id (such as last_name, first_name, company name, etc...)
+	 * return the rows if success else return false
+	 */
+	public function getNameById($id = false, $table = false, $row = false, $breakLongName = false)
+	{
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		if ($id && $table && $row != true && $row != false) {
+			$query
+				->select($row)
+				->from('#__' . $table . '')
+				->where('id = ' . $db->quote($id) . '');
+		} else if ($id && $table && $row == true) {
+			$query
+				->select(array('last_name', 'first_name', 'company'))
+				->from('#__' . $table . '')
+				->where('id = ' . $db->quote($id) . '');
+		} else {
+			return false;
+		}
+
+		$db->setQuery($query);
+
+		if($row == true) {
+			$result = $db->loadObjectList();
+
+			$name = '';
+			if($result[0]->last_name && $result[0]->first_name && $result[0]->company) {
+				if($breakLongName) {
+					$name .= $result[0]->company . '<br><small>' . $result[0]->last_name . ', ' . $result[0]->first_name . '</small>';
+				} else {
+					$name .= $result[0]->company . ' <small>' . $result[0]->last_name . ', ' . $result[0]->first_name . '</small>';
+				}
+			} else if(!$result[0]->last_name && !$result[0]->first_name && $result[0]->company) {
+				$name .= $result[0]->company;
+			} else if($result[0]->last_name && $result[0]->first_name && !$result[0]->company) {
+				$name .= $result[0]->last_name . ', ' . $result[0]->first_name;
+			} else if($result[0]->last_name && !$result[0]->first_name && !$result[0]->company) {
+				$name .= $result[0]->last_name;
+			} else if(!$result[0]->last_name && $result[0]->first_name && !$result[0]->company) {
+				$name .= $result[0]->first_name;
+			} else if($result[0]->last_name && !$result[0]->first_name && $result[0]->company) {
+				if($breakLongName) {
+					$name .= $result[0]->company . '<br><small>' . $result[0]->last_name . '</small>';
+				} else {
+					$name .= $result[0]->company . ' <small>' . $result[0]->last_name . '</small>';
+				}
+			} else if(!$result[0]->last_name && $result[0]->first_name && $result[0]->company) {
+				if($breakLongName) {
+					$name .= $result[0]->company . '<br><small>' . $result[0]->first_name . '</small>';
+				} else {
+					$name .= $result[0]->company . ' <small>' . $result[0]->first_name . '</small>';
+				}
+			} else {
+				$name .= NFW_UNKNOWN_PERSON_OR_COMPANY;
+			}
+
+			return $name;
+		} else {
+			$result = $db->loadResult();
+
+			return $result;
+		}
+	}
 }
