@@ -15,10 +15,15 @@
  * @since		3.2
  */
 
-// no direct access
-defined('_NFW_FRAMEWORK') or die;
+defined('_NFW_FRAMEWORK') or die();
 
-class NFWTransifex {
+
+/**
+ * Nawala Transifex Class
+ * Support for transifex procedures
+ *
+ */
+abstract class NFWTransifex {
 
 	/**
 	 * @param	string $projectslug	var	Projects slug/alias used on transifex.com (transifex, projectfork-languages, etc.)

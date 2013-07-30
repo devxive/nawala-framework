@@ -17,7 +17,6 @@
 
 defined('_NFW_FRAMEWORK') or die();
 
-
 /**
  * Nawala Geo Helper Class
  * Global Support for Geo-based procedures
