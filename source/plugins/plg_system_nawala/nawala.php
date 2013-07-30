@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * @project		XAP Project - Xive-Application-Platform
  * @subProject	Nawala Framework - A PHP and Javascript framework
@@ -20,7 +20,7 @@ defined('_JEXEC') or die();
 /**
  * Nawala plugin class.
  *
- * @package     Joomla.plugin
+ * @package     XAP.plugin
  * @subpackage  System.nawala
  */
 class plgSystemNawala extends JPlugin
