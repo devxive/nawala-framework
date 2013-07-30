@@ -37,5 +37,11 @@ class plgSystemNawala extends JPlugin
 		}
 
 		JLoader::registerPrefix('NFW', JPATH_LIBRARIES . '/nawala');
-    }
+
+		// Define version
+		if (!defined('NFWVERSION')) {
+			$nfwversion = new NFWVersion();
+			define('NFWVERSION', $nfwversion->getShortVersion());
+		}
+	}
 }
