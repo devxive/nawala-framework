@@ -17,7 +17,6 @@
 
 defined('_NFW_FRAMEWORK') or die();
 
-
 /**
  * Version information class for the Nawala Framework package.
  *
@@ -40,7 +39,7 @@ final class NFWVersion
     public $BUILD = '0';
 
     /** @var  string  Code name. */
-    public $CODENAME = 'Konglang';
+    public $CODENAME = 'Bagong Simula';
 
     /** @var  string  Release date. */
     public $RELDATE = '2013-07-29';
