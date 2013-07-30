@@ -1,9 +1,9 @@
-﻿<?php
+<?php
 /**
  * @project		XAP Project - Xive-Application-Platform
  * @subProject	Nawala Framework - A PHP and Javascript framework
  *
- * @package		Core.library
+ * @package		NFW.Installer
  * @subPackage	Framework
  * @version		6.0
  *
@@ -15,12 +15,12 @@
  * @since		5.0
  */
 
-if (!class_exists('PlgSystemnawalaframework_installerInstallerScript')) {
+if (!class_exists('PlgSystemXiveIRMinstallerInstallerScript')) {
 
 	/**
 	 *
 	 */
-	class PlgSystemnawalaframework_installerInstallerScript
+	class PlgSystemXiveIRMinstallerInstallerScript
 	{
 		/**
 		 * @var array
@@ -118,6 +118,14 @@ if (!class_exists('PlgSystemnawalaframework_installerInstallerScript')) {
 							} else {
 								NFWInstallerEvents::addMessage($package, NFWInstallerEvents::STATUS_UPDATED);
 							}
+							if (is_file($folder . '/setup.php')) {
+								// check if something to do after installation
+								if (($loadsetup = require_once($folder . '/setup.php')) == true) {
+									NFWInstallerEvents::addMessage($package, NFWInstallerEvents::STATUS_PREPARED, implode('<br>', $loadsetup));
+								} else {
+									NFWInstallerEvents::addMessage($package, NFWInstallerEvents::STATUS_ERROR, implode('<br>', $loadsetup));
+								}
+							}
 						} else {
 							$package                = Array();
 							$package['dir']         = $folder;
@@ -183,6 +191,10 @@ if (!class_exists('PlgSystemnawalaframework_installerInstallerScript')) {
 					return false;
 				}
 			}
+
+			// Set the core description from manifest for rendering at the bottom of the installer
+			$coreDescription = (string)$parent->get('manifest')->coreDescription;
+			NFWInstallerEvents::addCoreDescription($coreDescription);
 		}
 
 		/**
@@ -191,6 +203,17 @@ if (!class_exists('PlgSystemnawalaframework_installerInstallerScript')) {
 		 */
 		public function postflight($type, $parent)
 		{
+			if (is_file(dirname(__FILE__) . '/setup.php')) {
+				// check if something to do after installation
+				$manifest = $parent->get('manifest');
+				$package['name'] = (string)$manifest->description;
+				if (($loadsetup = require_once(dirname(__FILE__) . '/setup.php')) == true) {
+					NFWInstallerEvents::addMessage($package, NFWInstallerEvents::STATUS_PREPARED, implode('<br>', $loadsetup));
+				} else {
+					NFWInstallerEvents::addMessage($package, NFWInstallerEvents::STATUS_ERROR, implode('<br>', $loadsetup));
+				}
+			}
+
 			$conf = JFactory::getConfig();
 			$conf->set('debug', false);
 			$parent->getParent()->abort();
@@ -274,6 +297,7 @@ if (!class_exists('PlgSystemnawalaframework_installerInstallerScript')) {
 			{
 				$this->app->_messageQueue = $messages;
 			}
+
 		}
 	}
 }

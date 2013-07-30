@@ -3,7 +3,7 @@
  * @project		XAP Project - Xive-Application-Platform
  * @subProject	Nawala Framework - A PHP and Javascript framework
  *
- * @package		Core.library
+ * @package		NFW.Installer
  * @subPackage	Framework
  * @version		6.0
  *

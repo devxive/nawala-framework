@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <extension version="3.1" type="plugin" group="system" method="upgrade">
 	<name>Installer</name>
 	<author>devXive</author>
@@ -8,14 +8,15 @@
 	<authorEmail>support@devxive.com</authorEmail>
 	<authorUrl>http://devxive.com</authorUrl>
 	<version>6.0.0</version>
-	<description>
+	<description>XiveIRM - Interoberable Relationship Management</description>
+	<coreDescription>
 		<![CDATA[
 			<h1>Nawala Framework</h2>
 			<p>
 				A sophisticated, super-flexible PHP and Javascript framework that is easy to integrate, simple to use, and powerful enough to handle anything we want to throw at it.
 			</p>
 		]]>
-	</description>
+	</coreDescription>
 
 	<scriptfile>install.script.php</scriptfile>
 
