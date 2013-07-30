@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<extension type="library" method="upgrade" version="3.1">
+	<name>Nawala</name>
+	<libraryname>nawala</libraryname>
+	<author>devXive</author>
+	<creationDate>2013-02-14</creationDate>
+	<copyright>Copyright (C) 1997 - 2013 devXive - research and development. All rights reserved.</copyright>
+	<license>GNU General Public License version 2 or later.</license>
+	<authorEmail>support@devxive.com</authorEmail>
+	<authorUrl>www.devxive.com</authorUrl>
+	<version>6.0.0</version>
+	<description>A sophisticated, super-flexible PHP and Javascript framework that is easy to integrate, simple to use, and powerful enough to handle anything we want to throw at it. Do not remove!</description>
+
+	<files folder="library" destination="nawala">
+		<folder>transifex</folder>
+		<file>factory.php</file>
+		<file>library.php</file>
+		<file>index.html</file>
+	</files>
+
+	<media folder="media" destination="nawala">
+		<folder>css</folder>
+		<folder>font</folder>
+		<folder>images</folder>
+		<folder>img</folder>
+		<folder>js</folder>
+		<folder>less</folder>
+		<folder>plugins</folder>
+		<file>index.html</file>
+	</media>
+
+	<!-- Extension Update Specification -->
+	<updateservers>
+		<server name="Nawala Framework Update Server" priority="1" type="collection">https://raw.XXX.com/updates/nawala.xml</server>
+	</updateservers>
+</extension>

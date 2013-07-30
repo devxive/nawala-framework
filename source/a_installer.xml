@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="3.1" type="plugin" group="system" method="upgrade">
+	<name>Installer</name>
+	<author>devXive</author>
+	<creationDate>2013-04-20</creationDate>
+	<copyright>(C) 1997 - 2013 devXive - research and development. All rights reserved.</copyright>
+	<license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
+	<authorEmail>support@devxive.com</authorEmail>
+	<authorUrl>http://devxive.com</authorUrl>
+	<version>6.0.0</version>
+	<description>
+		<![CDATA[
+			<h1>Nawala Framework</h2>
+			<p>
+				A sophisticated, super-flexible PHP and Javascript framework that is easy to integrate, simple to use, and powerful enough to handle anything we want to throw at it.
+			</p>
+		]]>
+	</description>
+
+	<scriptfile>install.script.php</scriptfile>
+
+	<files>
+		<filename plugin="nawalaframework_installer">installer.php</filename>
+	</files>
+
+	<cogs>
+		<cog type="library" enabled="true" protected="false">
+			libraries/lib_nawala
+			<name>Nawala Framework</name>
+			<description>The Nawala Framework Shared Library for XAP, MOOTOMBO! and Joomla!</description>
+		</cog>
+		<cog type="plugin" client="site" ordering="1" access="1" enabled="true" protected="false">
+			plugins/plg_system_nawala
+			<name>Nawala Framework - System Plugin</name>
+			<description>The Nawala Framework - System Plugin</description>
+		</cog>
+	</cogs>
+</extension>
