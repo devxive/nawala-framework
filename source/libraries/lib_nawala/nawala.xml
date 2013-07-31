@@ -12,10 +12,30 @@
 	<description>A sophisticated, super-flexible PHP and Javascript framework that is easy to integrate, simple to use, and powerful enough to handle anything we want to throw at it. Do not remove!</description>
 
 	<files folder="library" destination="nawala">
+		<folder>access</folder>
+		<folder>application</folder>
+		<folder>connect</folder>
+		<folder>controller</folder>
+		<folder>convert</folder>
+		<folder>crypt</folder>
+		<folder>database</folder>
+		<folder>date</folder>
+		<folder>geo</folder>
+		<folder>html</folder>
+		<folder>installer</folder>
+		<folder>item</folder>
+		<folder>language</folder>
+		<folder>object</folder>
+		<folder>os</folder>
+		<folder>register</folder>
+		<folder>table</folder>
+		<folder>template</folder>
 		<folder>transifex</folder>
+		<folder>user</folder>
+		<folder>version</folder>
 		<file>factory.php</file>
-		<file>library.php</file>
 		<file>index.html</file>
+		<file>library.php</file>
 	</files>
 
 	<media folder="media" destination="nawala">

@@ -209,13 +209,13 @@ class NFWInstallerEvents extends JPlugin
 		$buffer .= '<div id="nfwinstall-logo"><ul id="nfwinstall-status" class="well">';
 		$buffer .= implode('', self::$messages);
 		$buffer .= '</ul></div>';
-		$buffer .= '</ul></div><div class="well">';
-		$buffer .= '<div class="row-fluid">';
+		$buffer .= '</ul></div><div class="row-fluid well nfwinstall-description">';
+		$buffer .= '<div>';
 		$buffer .= self::$coreDescription;
 		$buffer .= '</div>';
-		$buffer .= '<small class="pull-right">';
-		$buffer .= 'Nawala Framework Installer 6.0.0';
-		$buffer .= '</small>';
+		$buffer .= '<div class="small pull-right">';
+		$buffer .= 'Nawala Framework Installer 6, &copy; ' . date('Y', time()) . ' by <a href="http://devxive.com" target="_blank">devXive - research and development</a>';
+		$buffer .= '</div>';
 		$buffer .= '</div>';
 		return $buffer;
 	}

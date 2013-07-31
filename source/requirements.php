@@ -25,12 +25,10 @@ if (!$jversion->isCompatible('3.1')) {
 	$errors[] = '<i class="icon-warning"></i> XiveIRM will only run on XAP 13.6+, MOOTOMBO 3+ or Joomla! 3.1+ ';
 }
 
-if (!defined('NFWVERSION')) {
-	$errors[] = '<i class="icon-warning"></i> The Nawala Framework have to be installed first!';
-} else {
+if (defined('NFWVERSION')) {
 	$nfwversion = new NFWVersion();
-	if (version_compare(nfwversion->getShortVersion(), '6.0.0', 'gt')) {
-		$errors[] = '<i class="icon-warning"></i> Please update Nawala Framework to the latest version. You are running ' . nfwversion->getLongVersion();
+	if (version_compare($nfwversion->getShortVersion(), '6.0.0', 'gt')) {
+		$errors[] = '<i class="icon-warning"></i> Please update Nawala Framework to the latest version. You are running ' . $nfwversion->getLongVersion();
 	}
 }
 

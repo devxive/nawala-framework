@@ -15,12 +15,12 @@
  * @since		5.0
  */
 
-if (!class_exists('PlgSystemXiveIRMinstallerInstallerScript')) {
+if (!class_exists('PlgSystemNawalaFrameworkinstallerInstallerScript')) {
 
 	/**
 	 *
 	 */
-	class PlgSystemXiveIRMinstallerInstallerScript
+	class PlgSystemNawalaFrameworkinstallerInstallerScript
 	{
 		/**
 		 * @var array
