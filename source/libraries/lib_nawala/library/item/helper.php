@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * @project		XAP Project - Xive-Application-Platform
  * @subProject	Nawala Framework - A PHP and Javascript framework
@@ -111,11 +111,14 @@ abstract class NFWItemHelper
 		}
 	}
 
+
 	/*
 	 * return the current date, based on the timezone, given either in the user or the system config object.
 	 * @format	switch the format, sql datetime format, unix timestamp, date, datetime
 	 * @value	default now, other formats not supportet at this time
 	 * @mode	switch the mode (default: USER_UTC): SERVER_UTC, USER_UTC (USER_UTC with fallback to system, if the timezone is set to Global)
+	 *
+	 * @DEPRECATED IN 6.0	use NFWDate::getCurrent instead
 	 */
 	public function getDate($format = 'UNIX', $value = 'now', $mode = 'USER_UTC')
 	{
