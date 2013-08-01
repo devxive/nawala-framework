@@ -25,6 +25,12 @@ defined('_JEXEC') or die();
  */
 abstract class NFWTableData
 {
+	// Set the rowId from the store() if new
+	protected static $rowId = 0;
+
+	// Set the related assetId
+	protected static $assetId = 0;
+
 	// Stores the unique values for the ifExist check
 	protected static $existValues = '';
 	
@@ -37,41 +43,45 @@ abstract class NFWTableData
 	 */
 	public static function store($type, $prefix = '', $data = array(), $config = array())
 	{
-		// Check for an Id
+		// Check for an Id and store it to global
 		if ( isset($data['id']) ) {
-			if( $data['id'] > 0 && (int) $data['id'] ) {
-				$doAction = 'update';
-			} else if ( $data['id'] == 0 || $data['id'] == '') {
-				$doAction = 'new';
-			} else {
-				return false;
+			if ( $data['id'] > 0 ) {
+				self::$rowId = $data['id'];
 			}
 		} else {
-			$data['id'] = '';
-			$doAction = 'new';
+			$data['id'] = self::$rowId;
 		}
 
 		// Create the JTable object
 		$table = JTable::getInstance($type, $prefix, $config = array());
 
-		// Bind values to the object to check for missing defaults
-		if ($table->bind( $data ) === true) {
-			$table->created = isset($data['created']) ? $data['created'] : NFWDate::getCurrent('MySQL');
-			$table->created_by = isset($data['created_by']) ? $data['created_by'] : NFWUser::getId;
-		} else {
+		// Check for missing values
+		$data['created'] = isset($data['created']) ? $data['created'] : NFWDate::getCurrent('MySQL');
+		$data['created_by'] = isset($data['created_by']) ? $data['created_by'] : NFWUser::getId();
+
+		// Bind data
+		if ( !$table->bind( $data ) ) {
+			NFWHtmlMessage::set('Warning', 500, $table->getError() );
 			return false;
 		}
 
-		// Check and store the values // check if we should use if its true or if it is not false
-		if ($table->check() === true) {
-			$table->store();
-			if ( $doAction == 'new' ) {
-				return $table->id;
-			} else {
-				return true;
-			}
-		} else {
+		// Check data
+		if ( !$table->check() ) {
+			NFWHtmlMessage::set('Warning', 500, $table->getError() );
 			return false;
+		}
+
+		// Store data
+		if( !$table->store() ) {
+			NFWHtmlMessage::set('Warning', 500, $table->getError() );
+			return false;
+		} else {
+			if ( self::$rowId > 0 ) {
+				return true;
+			} else {
+				self::$rowId = $table->id;
+				return $table->id;
+			}
 		}
 	}
 }
