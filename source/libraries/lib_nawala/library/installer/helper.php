@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * @project		XAP Project - Xive-Application-Platform
  * @subProject	Nawala Framework - A PHP and Javascript framework
@@ -25,164 +25,181 @@ defined('_NFW_FRAMEWORK') or die();
  */
 abstract class NFWInstallerHelper
 {
-    /**
-     * Method to restore the assets from a previous component install
-     *
-     * @param     string     $element    The name of the component to restore
-     *
-     * @return    boolean                True on success, False on error
-     */
-    static function restoreAssets($element)
-    {
-        $asset_bak = JTable::getInstance('Asset');
-        $asset_new = JTable::getInstance('Asset');
+	/**
+	 * Method to restore the assets from a previous component install
+	 *
+	 * @param     string     $element    The name of the component to restore
+	 *
+	 * @return    boolean                True on success, False on error
+	 */
+	static function restoreAssets($element)
+	{
+		$asset_bak = JTable::getInstance('Asset');
+		$asset_new = JTable::getInstance('Asset');
 
-        // Check if we have a backup asset container from a previous install
-        if ($asset_bak->loadByName($element . '_bak')) {
-            // Yes, then try to load the current (new) one
-            if ($asset_new->loadByName($element)) {
-                // Delete the current asset
-                if ($asset_new->delete()) {
-                    // And make the old one the current again
-                    $asset_bak->name = $element;
+		// Check if we have a backup asset container from a previous install
+		if ($asset_bak->loadByName($element . '_bak')) {
+			// Yes, then try to load the current (new) one
+			if ($asset_new->loadByName($element)) {
+				// Delete the current asset
+				if ($asset_new->delete()) {
+					// And make the old one the current again
+					$asset_bak->name = $element;
 
-                    if (!$asset_bak->store()) {
-                        return false;
-                    }
-                }
-            }
-        }
+					if (!$asset_bak->store()) {
+						return false;
+					}
+				}
+			}
+		}
 
-        return true;
-    }
+		return true;
+	}
+
+	/**
+	 * Method to set the admin component menu item as child of a st.s parent
+	 *
+	 * @param     string     $component The component name
+	 * @param     string     $parent    The component name of the parent menu item
+	 *
+	 * @return    boolean                True on success, False on error
+	 */
+	static function setComponentChildMenuItem($component, $parent)
+	{
+		static $parent_menu_item = null;
+
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		// Find the parent component admin menu item
+		if (is_null($parent_menu_item)) {
+			$query->select('id')
+				->from('#__menu')
+				->where('menutype = ' . $db->quote('main'))
+				->where('title = ' . $db->quote( strtoupper($parent) ))
+				->where('client_id = 1');
+
+			$db->setQuery($query);
+			$parent_menu_item = (int) $db->loadResult();
+		}
+
+		if (!$parent_menu_item) {
+			return false;
+		}
+
+		// Find the menu item id of this component
+		$query->clear();
+		$query->select('id')
+			->from('#__menu')
+			->where('menutype = ' . $db->quote('main'))
+			->where('title = ' . $db->quote( strtoupper($component) ))
+			->where('client_id = 1');
+
+		$db->setQuery($query);
+		$menu_item = (int) $db->loadResult();
+
+		if (!$menu_item) {
+			return false;
+		}
+
+		$menu = JTable::getInstance('menu');
+
+		// Set the new parent item
+		if ($menu->load($menu_item)) {
+			$menu->setLocation($parent_menu_item, 'last-child');
+
+			if (!$menu->store()) {
+				return false;
+			}
+		}
+		else {
+			return false;
+
+		}
+
+		return true;
+	}
 
 
-    /**
-     * Method to set the admin component menu item as child of com_projectfork
-     *
-     * @param     string     $element    The component name
-     *
-     * @return    boolean                True on success, False on error
-     */
-    static function setComponentMenuItem($element)
-    {
-        static $pf_menu_item = null;
+	/**
+	 * Method to add a menu item in the components site navigation menu
+	 *
+	 * @param     array      $data    Menu item properties
+	 *
+	 * @example				// Create a Example menu item in the mainmenu menu
+	 *					$com = JComponentHelper::getComponent($element);
+	 *					$eid = (is_object($com) && isset($com->id)) ? $com->id : 0;
+	 *
+	 *					if ($eid) {
+	 *						$item = array();
+	 *						$data['menutype']		= 'mainmenu';
+	 *						$item['title']		= 'Example';
+	 *						$item['alias']		= 'example';
+	 *						$item['link']			= 'index.php?option=' . $element . '&view=example';
+	 *						$item['component_id']	= $eid;
+	 *
+	 *						NFWInstallerHelper::addMenuItem($item);
+	 *					}
+	 *
+	 * @return    boolean             True on success, False on error
+	 */
+	public static function addMenuItem($data)
+	{
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
 
-        $db    = JFactory::getDbo();
-        $query = $db->getQuery(true);
+		// Add any missing default properties
+		if (!isset($data['menutype']))     $data['menutype']     = 'mainmenu';
+		if (!isset($data['parent_id']))    $data['parent_id']    = '1';
+		if (!isset($data['level']))        $data['level']        = '1';
+		if (!isset($data['published']))    $data['published']    = '1';
+		if (!isset($data['type']))         $data['type']         = 'component';
+		if (!isset($data['component_id'])) $data['component_id'] = 0;
+		if (!isset($data['language']))     $data['language']     = '*';
+		if (!isset($data['access']))       $data['access']       = '1';
+		if (!isset($data['img']))          $data['img']          = 'class:none';
+		if (!isset($data['params']))       $data['params']       = '{}';
+		if (!isset($data['ordering']))     $data['ordering']     = 0;
 
-        // Find the projectfork admin component menu item
-        if (is_null($pf_menu_item)) {
-            $query->select('id')
-                  ->from('#__menu')
-                  ->where('menutype = ' . $db->quote('main'))
-                  ->where('title = ' . $db->quote('com_projectfork'))
-                  ->where('client_id = 1');
+		$data['id'] = null;
 
-            $db->setQuery($query);
-            $pf_menu_item = (int) $db->loadResult();
-        }
+		// Save the menu item
+		$row = JTable::getInstance('menu');
 
-        if (!$pf_menu_item) {
-            return false;
-        }
+		$row->setLocation(1, 'last-child');
 
-        // Find the menu item id of this component
-        $query->clear();
-        $query->select('id')
-              ->from('#__menu')
-              ->where('menutype = ' . $db->quote('main'))
-              ->where('title = ' . $db->quote($element))
-              ->where('client_id = 1');
+		if (!$row->bind($data)) {
+			return false;
+		}
 
-        $db->setQuery($query);
-        $menu_item = (int) $db->loadResult();
+		if (!$row->check()) {
+			return false;
+		}
 
-        if (!$menu_item) {
-            return false;
-        }
+		if (!$row->store()) {
+			return false;
+		}
 
-        $menu = JTable::getInstance('menu');
+		$query->clear();
+		$query->update('#__menu')
+			->set('parent_id = 1')
+			->set('level = 1')
+			->where('id = ' . (int) $row->id);
 
-        // Set the new parent item
-        if ($menu->load($menu_item)) {
-            $menu->setLocation($pf_menu_item, 'last-child');
+		$db->setQuery($query);
+		$db->execute();
 
-            if (!$menu->store()) {
-                return false;
-            }
-        }
-        else {
-            return false;
-        }
+		$row->parent_id = 1;
+		$row->level = 1;
 
-        return true;
-    }
+		$row->setLocation(1, 'last-child');
 
+		if (!$row->rebuildPath($row->id)) {
+			return false;
+		}
 
-    /**
-     * Method to add a menu item in the Projectfork site navigation menu
-     *
-     * @param     array      $data    Menu item properties
-     *
-     * @return    boolean             True on success, False on error
-     */
-    public static function addMenuItem($data)
-    {
-        $db    = JFactory::getDbo();
-        $query = $db->getQuery(true);
-
-        // Add any missing default properties
-        if (!isset($data['menutype']))     $data['menutype']     = 'projectfork';
-        if (!isset($data['parent_id']))    $data['parent_id']    = '1';
-        if (!isset($data['level']))        $data['level']        = '1';
-        if (!isset($data['published']))    $data['published']    = '1';
-        if (!isset($data['type']))         $data['type']         = 'component';
-        if (!isset($data['component_id'])) $data['component_id'] = 0;
-        if (!isset($data['language']))     $data['language']     = '*';
-        if (!isset($data['access']))       $data['access']       = '1';
-        if (!isset($data['params']))       $data['params']       = '{}';
-        if (!isset($data['ordering']))     $data['ordering']     = 0;
-
-        $data['id'] = null;
-
-        // Save the menu item
-        $row = JTable::getInstance('menu');
-
-        $row->setLocation(1, 'last-child');
-
-        if (!$row->bind($data)) {
-            return false;
-        }
-
-        if (!$row->check()) {
-            return false;
-        }
-
-        if (!$row->store()) {
-            return false;
-        }
-
-        $query->clear();
-        $query->update('#__menu')
-              ->set('parent_id = 1')
-              ->set('level = 1')
-              ->where('id = ' . (int) $row->id);
-
-        $db->setQuery($query);
-        $db->execute();
-
-        $row->parent_id = 1;
-        $row->level = 1;
-
-        $row->setLocation(1, 'last-child');
-
-        if (!$row->rebuildPath($row->id)) {
-            return false;
-        }
-
-        return true;
-    }
+		return true;
+	}
 
 
     /**
