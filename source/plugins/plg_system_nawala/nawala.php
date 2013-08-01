@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * @project		XAP Project - Xive-Application-Platform
  * @subProject	Nawala Framework - A PHP and Javascript framework
@@ -37,11 +37,5 @@ class plgSystemNawala extends JPlugin
 		}
 
 		JLoader::registerPrefix('NFW', JPATH_LIBRARIES . '/nawala');
-
-		// Define version
-		if (!defined('NFWVERSION')) {
-			$nfwversion = new NFWVersion();
-			define('NFWVERSION', $nfwversion->getShortVersion());
-		}
 	}
 }
