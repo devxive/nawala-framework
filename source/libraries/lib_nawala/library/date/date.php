@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * @project		XAP Project - Xive-Application-Platform
  * @subProject	Nawala Framework - A PHP and Javascript framework
@@ -276,4 +276,83 @@ abstract class NFWDate
 
         return $result;
     }
+
+
+	/**
+	 * Method to get the current time based on either users or system timezone
+	 *
+	 * @param     array     $format     Switch the format, sql datetime format, unix timestamp, date, datetime
+	 * @param     array     $tz         Switch the timezone: SERVER_UTC, USER_UTC (USER_UTC has fallback to SERVER_UTC, if the tz is set to global)
+	 * @param     array     $date       Default now, other formats not supportet at this time
+	 * @param     array     $options    Config options
+	 *
+	 * @return    string    $result     The current time
+	 */
+	public static function getCurrent($format = 'UNIX', $tz = 'USER_UTC', $date = 'now', $options = array())
+	{
+		// Get some system objects.
+		$config = JFactory::getConfig();
+		$user = JFactory::getUser();
+
+		$jdate = JFactory::getDate($date, 'UTC');
+
+		// Set the timezone
+		switch ($tz)
+		{
+			case 'SERVER_UTC':
+				// Convert a date to UTC based on the server timezone.
+				$jdate->setTimezone(new DateTimeZone($config->get('offset')));
+				break;
+
+			case 'USER_UTC':
+				// Convert a date to UTC based on the user timezone (Fallback, system config timezome, if user tz is set to global).
+				$jdate->setTimezone(new DateTimeZone($user->getParam('timezone', $config->get('offset'))));
+				break;
+		}
+
+		// Transform the date string
+		switch ($format)
+		{
+			case 'MySQL':
+				$date = $jdate->format('Y-m-d H:i:s', true, false);
+				break;
+
+			case 'UNIX':
+				$date = strtotime($jdate->format('Y-m-d H:i:s', true, false));
+				break;
+
+			case 'TIME':
+				$date = $jdate->format('H:i', true, false);
+				break;
+
+			case 'TIMES':
+				$date = $jdate->format('H:i:s', true, false);
+				break;
+
+			case 'LC':
+			case 'LC1':
+			case 'JLC':
+			case 'JLC1': // Wednesday, 12 June 2013 
+				$date = $jdate->format('l, d F Y', true, false);
+				break;
+
+			case 'LC2':
+			case 'JLC2': // Wednesday, 12 June 2013 15:20
+				$date = $jdate->format('l, d F Y H:i', true, false);
+				break;
+
+			case 'LC3':
+			case 'JLC3':
+				$date = $jdate->format('d F Y', true, false); // 12 June 2013
+				break;
+
+			case 'DATE':
+			case 'LC4':
+			case 'JLC4':
+				$date = $jdate->format('Y-m-d', true, false); // 2013-06-12
+				break;
+		}
+
+		return $date;
+	}
 }
