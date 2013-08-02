@@ -26,8 +26,8 @@
 		<folder>item</folder>
 		<folder>language</folder>
 		<folder>object</folder>
-		<folder>os</folder>
 		<folder>register</folder>
+		<folder>system</folder>
 		<folder>table</folder>
 		<folder>template</folder>
 		<folder>transifex</folder>
