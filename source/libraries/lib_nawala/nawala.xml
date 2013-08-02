@@ -3,12 +3,12 @@
 	<name>Nawala</name>
 	<libraryname>nawala</libraryname>
 	<author>devXive</author>
-	<creationDate>2013-02-14</creationDate>
+	<creationDate>2013-08-02</creationDate>
 	<copyright>Copyright (C) 1997 - 2013 devXive - research and development. All rights reserved.</copyright>
 	<license>GNU General Public License version 2 or later.</license>
 	<authorEmail>support@devxive.com</authorEmail>
 	<authorUrl>www.devxive.com</authorUrl>
-	<version>6.0.0</version>
+	<version>6.0.1</version>
 	<description>A sophisticated, super-flexible PHP and Javascript framework that is easy to integrate, simple to use, and powerful enough to handle anything we want to throw at it. Do not remove!</description>
 
 	<files folder="library" destination="nawala">

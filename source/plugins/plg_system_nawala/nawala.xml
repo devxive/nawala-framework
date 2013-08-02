@@ -2,12 +2,12 @@
 <extension version="3.1" type="plugin" group="system" method="upgrade">
 	<name>System - Nawala Framework</name>
 	<author>devXive</author>
-	<creationDate>2011-04-20</creationDate>
+	<creationDate>2011-08-02</creationDate>
 	<copyright>Copyright (C) 1997 - 2013 devXive - research and development. All rights reserved.</copyright>
 	<license>GNU General Public License version 2 or later.</license>
 	<authorEmail>support@devxive.com</authorEmail>
 	<authorUrl>http://devxive.com</authorUrl>
-	<version>6.0.0</version>
+	<version>6.0.1</version>
 	<description><![CDATA[
 		This is the Nawala Framework - System Plugin which is needed by ALL devXive, XAP and MOOTOMBO private/business apps/extensions. Turning this off may cause a wide list of errors which will be shown on your frontent or backend and is also visible by your visitors.<br>
 		<br>
