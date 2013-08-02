@@ -32,56 +32,147 @@ abstract class NFWTableData
 	protected static $assetId = 0;
 
 	// Stores the unique values for the ifExist check
-	protected static $existValues = '';
-	
+	public static $returnMsg = array();
+
 	/**
-	 * Method to store values with related assets based on array $config
+	 * Method to store values with related assets based on array $config.
 	 *
-	 * @fields	$data		array of fields to use as columns and values ( eg. array('id' => 1, 'title' => 'The Title') )
+	 * @param     string        $type      Should be the filename in the /admin/table folder of the appropriate table to load. It should be also the second part of the classname.
+	 * @param     string        $prefix    Should be the first part of the classname as described above.
+	 *                                     Example:
+	 *                                         "class MycomponentTableOptions extends JTable"
+	 *                                                |               |
+	 *                                                first Part      second Part
+	 *                                                |               |
+	 *                                                prefix          type
+	 *                                     
+	 * @param     mixed         $data      Array or object of fields or arrays to use as columns and values ( eg. array('id' => 1, 'title' => 'The Title') ).
+	 *                                     To save multiple rows at one, you have to put all single arrays in an object
+	 * @param     array         $config    Don't know ;)    
+	 * @param     bool          $debug     If true it will return the data arrays with more informations instead of only false
 	 *
-	 * @return			true if update, return id if new is successfull, else false
+	 * @return    mixed/bool               Returns a message with all datas set if true, else return false
 	 */
-	public static function store($type, $prefix = '', $data = array(), $config = array())
+	public static function store($type, $prefix = '', $data = false, $config = array(), $debug = false)
 	{
-		// Check for an Id and store it to global
-		if ( isset($data['id']) ) {
-			if ( $data['id'] > 0 ) {
-				self::$rowId = $data['id'];
+		if ( is_object($data) ) {
+			foreach($data as $data) {
+				// Create the JTable object
+				$table = JTable::getInstance($type, $prefix, $config);
+
+				// Check for an id and store it to global, else we use the init global (0)
+				// Note: If id is > 0, JTable performs an update
+				if ( isset($data['id']) ) {
+					self::$rowId = (int) $data['id'];
+				} else {
+					$data['id'] = self::$rowId;
+				}
+
+				// Check for missing values and add them
+				if ( $data['id'] > 0 ) {
+					$data['modified'] = isset($data['modified']) ? $data['modified'] : NFWDate::getCurrent('MySQL');
+					$data['modified_by'] = isset($data['modified_by']) ? $data['modified_by'] : NFWUser::getId();
+				} else {
+					$data['created'] = isset($data['created']) ? $data['created'] : NFWDate::getCurrent('MySQL');
+					$data['created_by'] = isset($data['created_by']) ? $data['created_by'] : NFWUser::getId();
+				}
+
+				// Bind data
+				if ( !$table->bind( $data ) ) {
+					$data['ErrorBind'] = $table->getError();
+					$returnMsg[] = $data;
+					if($debug) {
+						return $returnMsg;
+					} else {
+						return false;
+					}
+				}
+				
+				// Check data
+				if ( !$table->check() ) {
+					$data['ErrorCheck'] = $table->getError();
+					$returnMsg[] = $data;
+					if($debug) {
+						return $returnMsg;
+					} else {
+						return false;
+					}
+				}
+
+				// Store data
+				if( !$table->store() ) {
+					$data['ErrorStore'] = $table->getError();
+					$returnMsg[] = $data;
+					if($debug) {
+						return $returnMsg;
+					} else {
+						return false;
+					}
+				} else {
+					$data['id'] = $table->id;
+					$returnMsg[] = $data;
+				}
 			}
-		} else {
-			$data['id'] = self::$rowId;
-		}
 
-		// Create the JTable object
-		$table = JTable::getInstance($type, $prefix, $config = array());
+			return $returnMsg;
+		} else if ( is_array($data) ) {
+			// Create the JTable object
+			$table = JTable::getInstance($type, $prefix, $config);
 
-		// Check for missing values
-		$data['created'] = isset($data['created']) ? $data['created'] : NFWDate::getCurrent('MySQL');
-		$data['created_by'] = isset($data['created_by']) ? $data['created_by'] : NFWUser::getId();
-
-		// Bind data
-		if ( !$table->bind( $data ) ) {
-			NFWHtmlMessage::set('Warning', 500, $table->getError() );
-			return false;
-		}
-
-		// Check data
-		if ( !$table->check() ) {
-			NFWHtmlMessage::set('Warning', 500, $table->getError() );
-			return false;
-		}
-
-		// Store data
-		if( !$table->store() ) {
-			NFWHtmlMessage::set('Warning', 500, $table->getError() );
-			return false;
-		} else {
-			if ( self::$rowId > 0 ) {
-				return true;
+			// Check for an id and store it to global, else we use the init global (0)
+			// Note: If id is > 0, JTable performs an update
+			if ( isset($data['id']) ) {
+				self::$rowId = (int) $data['id'];
 			} else {
-				self::$rowId = $table->id;
-				return $table->id;
+				$data['id'] = self::$rowId;
 			}
+
+			// Check for missing values and add them
+			if ( $data['id'] > 0 ) {
+				$data['modified'] = isset($data['modified']) ? $data['modified'] : NFWDate::getCurrent('MySQL');
+				$data['modified_by'] = isset($data['modified_by']) ? $data['modified_by'] : NFWUser::getId();
+			} else {
+				$data['created'] = isset($data['created']) ? $data['created'] : NFWDate::getCurrent('MySQL');
+				$data['created_by'] = isset($data['created_by']) ? $data['created_by'] : NFWUser::getId();
+			}
+
+			// Bind data
+			if ( !$table->bind( $data ) ) {
+				$data['NFWTableBindError'] = $table->getError();
+				$returnMsg[] = $data;
+					if($debug) {
+						return $returnMsg;
+					} else {
+						return false;
+					}
+			}
+				
+			// Check data
+			if ( !$table->check() ) {
+				$data['NFWTableCheckError'] = $table->getError();
+				$returnMsg[] = $data;
+					if($debug) {
+						return $returnMsg;
+					} else {
+						return false;
+					}
+			}
+
+			// Store data
+			if( !$table->store() ) {
+				$data['NFWTableStoreError'] = $table->getError();
+				$returnMsg[] = $data;
+					if($debug) {
+						return $returnMsg;
+					} else {
+						return false;
+					}
+			} else {
+				$data['id'] = $table->id;
+				$returnMsg[] = $data;
+			}
+
+			return $returnMsg;
 		}
 	}
 }
