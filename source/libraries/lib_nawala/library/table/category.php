@@ -35,7 +35,7 @@ abstract class NFWTableCategory
 		}
 
 		// Create the JTable Category object
-		$table = JTable::getInstance('Category', 'JTable');
+		$table = JTable::getInstance('Category');
 
 		// Check for missing values
 		$data['parent_id'] = isset($data['parent_id']) ? $data['parent_id'] : 1;
