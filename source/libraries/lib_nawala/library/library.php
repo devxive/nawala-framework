@@ -1,55 +1,43 @@
 <?php
 /**
-  * @info		$Id$ - $Revision$
-  * @package		$Nawala.Framework $
-  * @subpackage	Framework
-  * @check		$Date$ || $Result: devXive AntiMal...OK, nothing found $
-  * @author		$Author$ @ devXive - research and development <support@devxive.com>
-  * @copyright	Copyright (C) 1997 - 2013 devXive - research and development (http://www.devxive.com)
-  * @license		http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
-  * @assetsLicense	devXive Proprietary Use License (http://www.devxive.com/license)
-  */
+ * @project		XAP Project - Xive-Application-Platform
+ * @subProject	Nawala Framework - A PHP and Javascript framework
+ *
+ * @package		NFW.Library
+ * @subPackage	Framework
+ * @version		6.0
+ *
+ * @author		devXive - research and development <support@devxive.com> (http://www.devxive.com)
+ * @copyright		Copyright (C) 1997 - 2013 devXive - research and development. All rights reserved.
+ * @license		GNU General Public License version 2 or later; see LICENSE.txt
+ * @assetsLicense	devXive Proprietary Use License (http://www.devxive.com/license)
+ *
+ * @since		3.2
+ */
 
-// no direct access
-defined('_NFWRA') or die;
+defined('_NFW_FRAMEWORK') or die();
 
-// Set the Nawala Framework root path as a constant if necessary.
-if (!defined('NPATH_FRAMEWORK'))
-{
-	define('NPATH_FRAMEWORK', JPATH_SITE . '/libraries/nawala');
+// Define version
+if ( !defined('NFWVERSION') ) {
+	$nfwversion = new NFWVersion();
+	define( 'NFWVERSION', $nfwversion->getShortVersion() );
 }
 
 // Set the Nawala Framework root path as a constant if necessary.
-if (!defined('NPATH_MEDIA'))
+if (!defined('NFWPATH_FRAMEWORK'))
 {
-	define('NPATH_MEDIA', JPATH_SITE . '/media/nawala');
+	define('NFWPATH_FRAMEWORK', JPATH_SITE . '/libraries/nawala');
+}
+
+// Set the Nawala Framework media root path as a constant if necessary.
+if (!defined('NFWPATH_MEDIA'))
+{
+	define('NFWPATH_MEDIA', JPATH_SITE . '/media/nawala');
 }
 
 // Define legacy directory separator as a constant if not exist
 if(!defined('DS')) {
-	define('DS', DIRECTORY_SEPARATOR);
-}
-
-// Init NLoader to work in nimport function if necessary.
-if (!class_exists('NLoader'))
-{
-	require_once (NPATH_FRAMEWORK . '/core/loader.php');
-}
-
-// Init the framework version class if necessary.
-if (!class_exists('NFramework'))
-{
-	require_once (NPATH_FRAMEWORK . '/core/version.php');
-}
-
-/**
- * @param  string $path the nawala path to the class to import
- *
- * @return void
- */
-function nimport($key, $dep = true)
-{
-	return NLoader::_($key, $dep);
+	define('DS', '/');
 }
 
 // Init the factory if necessary.

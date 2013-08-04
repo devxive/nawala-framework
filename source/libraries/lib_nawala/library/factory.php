@@ -1,17 +1,21 @@
 <?php
 /**
-  * @info		$Id$ - $Revision$
-  * @package		$Nawala.Framework $
-  * @subpackage	NFWFactory
-  * @check		$Date$ || $Result: devXive AntiMal...OK, nothing found $
-  * @author		$Author$ @ devXive - research and development <support@devxive.com>
-  * @copyright	Copyright (C) 1997 - 2013 devXive - research and development (http://www.devxive.com)
-  * @license		http://www.gnu.org/licenses/gpl-2.0.html GNU/GPLv2 only
-  * @assetsLicense	devXive Proprietary Use License (http://www.devxive.com/license)
-  */
+ * @project		XAP Project - Xive-Application-Platform
+ * @subProject	Nawala Framework - A PHP and Javascript framework
+ *
+ * @package		NFW.Library
+ * @subPackage	Framework
+ * @version		6.0
+ *
+ * @author		devXive - research and development <support@devxive.com> (http://www.devxive.com)
+ * @copyright		Copyright (C) 1997 - 2013 devXive - research and development. All rights reserved.
+ * @license		GNU General Public License version 2 or later; see LICENSE.txt
+ * @assetsLicense	devXive Proprietary Use License (http://www.devxive.com/license)
+ *
+ * @since		3.2
+ */
 
-// no direct access
-defined('_NFWRA') or die;
+defined('_NFW_FRAMEWORK') or die();
 
 /**
  * Nawala Framework Factory class
