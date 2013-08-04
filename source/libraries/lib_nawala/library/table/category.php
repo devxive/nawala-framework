@@ -44,6 +44,7 @@ abstract class NFWTableCategory
 		$data['published'] = isset($data['published']) ? $data['published'] : 1;
 		$data['access'] = isset($data['access']) ? $data['access'] : 1;
 		$data['created_user_id'] = isset($data['created_user_id']) ? $data['created_user_id'] : NFWUser::getId();
+		$data['language'] = isset($data['language']) ? $data['language'] : '*';
 
 		// Bind data
 		if ( !$table->bind( $data ) ) {
