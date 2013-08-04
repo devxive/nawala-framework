@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * @project		XAP Project - Xive-Application-Platform
  * @subProject	Nawala Framework - A PHP and Javascript framework
@@ -89,14 +89,17 @@ abstract class NFWHtml
 		// Load Bootstrap main CSS
 		if ($includeMainCss)
 		{
-			JHtml::_('stylesheet', 'jui/bootstrap.min.css', $attribs, true);
-			JHtml::_('stylesheet', 'jui/bootstrap-responsive.min.css', $attribs, true);
+//			JHtml::_('stylesheet', 'jui/bootstrap.min.css', $attribs, true);
+//			JHtml::_('stylesheet', 'jui/bootstrap-responsive.min.css', $attribs, true);
+			JHtml::_('stylesheet', 'nawala/bootstrap.min.css', $attribs, true);
+			JHtml::_('stylesheet', 'nawala/bootstrap-responsive.min.css', $attribs, true);
 		}
 
 		// Load Bootstrap RTL CSS
 		if ($direction === 'rtl')
 		{
-			JHtml::_('stylesheet', 'jui/bootstrap-rtl.css', $attribs, true);
+//			JHtml::_('stylesheet', 'jui/bootstrap-rtl.css', $attribs, true);
+			JHtml::_('stylesheet', 'nawala/bootstrap-rtl.css', $attribs, true);
 		}
 	}
 
