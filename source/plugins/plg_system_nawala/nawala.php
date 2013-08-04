@@ -26,16 +26,31 @@ defined('_JEXEC') or die();
 class plgSystemNawala extends JPlugin
 {
 	/**
-	 * Method to register the library.
+	 * Constructor.
 	 *
-	 * return  void
+	 * @access protected
+	 * @param object $subject The object to observe
+	 * @param array   $config  An array that holds the plugin configuration
+	 * @since 1.0
 	 */
-	public function onAfterInitialise()
+	public function __construct( &$subject, $config )
 	{
+		parent::__construct( $subject, $config );
+
 		if (!defined('_NFW_FRAMEWORK')) {
 			define('_NFW_FRAMEWORK', 1);
 		}
 
+		// Register the library.
 		JLoader::registerPrefix('NFW', JPATH_LIBRARIES . '/nawala');
+
+		// Do some extra initialisation in this constructor if required
+	}
+
+	/**
+	 * return  void
+	 */
+	public function onAfterInitialise()
+	{
 	}
 }
