@@ -45,10 +45,15 @@ abstract class NFWSystemFolder
 	 *
 	 * @return
 	 */
-	public function delete($action = false, $path = '/', $config = false) {
+	public function delete($path = '/', $config = false) {
 		// Check the path, after that use the self::$path to work with
-		self::checkPath($path);
+		$checkPath = self::checkPath($path);
+		if ( !$checkPath ) {
+			JError::raiseWarning(500, 'Invalid path:<ul><li>' . self::$path . '</li></ul>');
+			return false;
+		}
 
+		// Process config
 		if ( $config ) {
 		}
 
@@ -64,10 +69,18 @@ abstract class NFWSystemFolder
 	 */
 	private static function checkPath($path) {
 		// Check if the first char is a slash
-		if ( $path == '' || $path[0] != '/' || ($path[0] == '/' && !isset($path[1])) ) {
-			self::$path .= '/';
+		$path = str_replace('..', '', $path);
+		if ( ($path[0] == '/' && $path[1] == '/') || ($path[0] == '.' && $path[1] == '/') ) {
+			self::$path .= $path;
+			return false;
+		}
+
+		if ( $path == '' || $path[0] != '/' || ($path[0] == '/' && $path[1] == '') ) {
+			self::$path .= '/' . $path;
+			return true;
 		} else {
 			self::$path .= $path;
+			return true;
 		}
 	}
 }
