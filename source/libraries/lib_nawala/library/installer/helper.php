@@ -122,34 +122,66 @@ abstract class NFWInstallerHelper
 
 
 	/**
-	 * Method to add a menu item in the components site navigation menu
+	 * Method to add a menu type
 	 *
-	 * @param     array      $data    Menu item properties
+	 * @param     array      $data      Menutype properties
+	 * @param     array      $module    Add a menu module based on the datas given to create a menu_type
 	 *
-	 * @example				// Create a Example menu item in the mainmenu menu
-	 *					$com = JComponentHelper::getComponent($element);
-	 *					$eid = (is_object($com) && isset($com->id)) ? $com->id : 0;
+	 * @return    mixed                 Return id of the inserted menutype if success, false on error
 	 *
-	 *					if ($eid) {
-	 *						$item = array();
-	 *						$data['menutype']		= 'mainmenu';
-	 *						$item['title']		= 'Example';
-	 *						$item['alias']		= 'example';
-	 *						$item['link']			= 'index.php?option=' . $element . '&view=example';
-	 *						$item['component_id']	= $eid;
-	 *
-	 *						NFWInstallerHelper::addMenuItem($item);
-	 *					}
-	 *
-	 * @return    boolean             True on success, False on error
+	 * @example                         // Create a menutype in the #__menu_type table and add a related menu module
+	 *                                  $returnedId = NFWInstallerHelper::addMenuType( array('menutype' => 'example', 'title' => 'Example', 'description' => 'Example Menu'), true );
 	 */
-	public static function addMenuItem($data)
+	public static function addMenuType($data = false, $module = false)
 	{
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		// Check for data
+		if ( !$data ) {
+			return false;
+		}
 
+		$result = NFWDatabase::save('menu_types', $data);
+
+		if ( $module ) {
+			$moduleData = array('module' => 'mod_menu', 'title' => $data['title'], 'note' => $data['description'], 'params' => '{"menutype":"' . $data['menutype'] . '"}');
+			NFWModuleHelper::add($moduleData);
+		}
+
+		if ( $result['status'] == true ) {
+			return $result['id'];
+		} else {
+			return false;
+		}
+	}
+
+
+	/**
+	 * Method to add a menu item in the XiveIRM site navigation menu
+	 *
+	 * @param     array      $data        Menu item properties
+	 * @param     string     $menutype    Type of the menu, eiter mainmenu (standard) or any other menu
+	 *
+	 * @return    mixed                   Return inserted id on success, false on error
+	 *
+	 * @example                           // Create a Example menu item in the mainmenu menu
+	 *                                    $component = 'com_example'
+	 *                                    $com = JComponentHelper::getComponent($component);
+	 *                                    $eid = (is_object($com) && isset($com->id)) ? $com->id : 0;
+	 *
+	 *                                    if ($eid) {
+	 *                                        $item = array(
+	 *                                            'title' => 'Example',
+	 *                                            'alias' => 'example',
+	 *                                            'link' => 'index.php?option=' . $component . '&view=example',
+	 *                                            'component_id' => $eid
+	 *                                        );
+	 *
+	 *                                        NFWInstallerHelper::addMenuItem($item, 'examplemenu');
+	 *                                    }
+	 */
+	public static function addMenuItem($data, $menutype = 'mainmenu')
+	{
 		// Add any missing default properties
-		if (!isset($data['menutype']))     $data['menutype']     = 'mainmenu';
+		if (!isset($data['menutype']))     $data['menutype']     = $menutype;
 		if (!isset($data['parent_id']))    $data['parent_id']    = '1';
 		if (!isset($data['level']))        $data['level']        = '1';
 		if (!isset($data['published']))    $data['published']    = '1';
@@ -166,7 +198,7 @@ abstract class NFWInstallerHelper
 		// Save the menu item
 		$row = JTable::getInstance('menu');
 
-		$row->setLocation(1, 'last-child');
+		$row->setLocation($data['parent_id'], 'last-child');
 
 		if (!$row->bind($data)) {
 			return false;
@@ -180,149 +212,26 @@ abstract class NFWInstallerHelper
 			return false;
 		}
 
-		$query->clear();
-		$query->update('#__menu')
-			->set('parent_id = 1')
-			->set('level = 1')
-			->where('id = ' . (int) $row->id);
+		$dataHelper = array(
+			'id' => (int) $row->id,
+			'parent_id' => (int) $data['parent_id'],
+			'level' => (int) $data['level']
+		);
 
-		$db->setQuery($query);
-		$db->execute();
+		NFWDatabase::save('menu', $dataHelper);
 
-		$row->parent_id = 1;
-		$row->level = 1;
+		$row->parent_id = $data['parent_id'];
+		$row->level = $data['level'];
 
-		$row->setLocation(1, 'last-child');
+		$row->setLocation($data['parent_id'], 'last-child');
 
 		if (!$row->rebuildPath($row->id)) {
 			return false;
 		}
 
-		return true;
+		return $row->id;
 	}
 
-
-    /**
-     * Method to register an extension to be uninstalled with com_projectfork
-     *
-     * @param     string     $element    The name of the extension
-     * @param     string     $type       The extension type
-     *
-     * @return    boolean                True on success, False on error
-     */
-    public static function registerCustomUninstall($element, $type = 'component')
-    {
-        $db    = JFactory::getDbo();
-        $query = $db->getQuery(true);
-
-        switch (strtolower($type))
-        {
-            case 'plugin':
-                $key = 'plugins';
-                break;
-
-            case 'module':
-                $key = 'modules';
-                break;
-
-            case 'template':
-                $key = 'templates';
-                break;
-
-            case 'library':
-                $key = 'libraries';
-                break;
-
-            case 'component':
-            default:
-                $key = 'components';
-                break;
-        }
-
-        // Get projectfork custom data
-        $query->select('custom_data')
-              ->from('#__extensions')
-              ->where('element = ' . $db->quote('com_projectfork'))
-              ->where('type = ' . $db->quote('component'));
-
-        $db->setQuery((string) $query);
-        $custom_data = $db->loadResult();
-        $custom_data = ($custom_data == '') ? array() : json_decode($custom_data, true);
-
-        // Check the data keys
-        if (!isset($custom_data['uninstall'])) {
-            $custom_data['uninstall'] = array();
-        }
-
-        if (!isset($custom_data['uninstall'][$key])) {
-            $custom_data['uninstall'][$key] = array();
-        }
-
-        if (in_array($element, $custom_data['uninstall'][$key])) {
-            return true;
-        }
-
-        // Register
-        $custom_data['uninstall'][$key][] = $element;
-
-        // Update the field
-        $query->clear();
-        $query->update('#__extensions')
-              ->set('custom_data = ' . $db->quote(json_encode($custom_data)))
-              ->where('element = ' . $db->quote('com_projectfork'))
-              ->where('type = ' . $db->quote('component'));
-
-        $db->setQuery((string) $query);
-
-        if (!$db->execute()) {
-            return false;
-        }
-
-        return true;
-    }
-
-
-    /**
-     * Method to set module params such as position, publishing state and title
-     *
-     * @param     object     $manifest    Instance of the XML manifest
-     *
-     * @return    boolean                 True on success, False on error
-     */
-    public static function setModuleParams(&$manifest)
-    {
-        $db    = JFactory::getDbo();
-        $query = $db->getQuery(true);
-
-        // Get module name, position and published state
-        $name  = $manifest->name;
-        $pos   = (isset($manifest->position) ? $manifest->position : '');
-        $pub   = (isset($manifest->published) ? (int) $manifest->published : 0);
-        $title = (isset($manifest->show_title) ? (int) $manifest->show_title : 1);
-
-        // Get the module id
-        $query->select('id')
-              ->from('#__modules')
-              ->where('module = ' . $db->quote($name));
-
-        $db->setQuery((string) $query);
-        $id = (int) $db->loadResult();
-
-        if (!$id) return false;
-
-        // Update params
-        $query->clear();
-        $query->update('#__modules');
-        if ($pos) $query->set('position = ' . $db->quote($pos));
-        if ($pub) $query->set('published = ' . $db->quote($pub));
-        $query->set('showtitle = ' . $db->quote($title));
-        $query->where('module = ' . $db->quote($name));
-
-        $db->setQuery((string) $query);
-        $db->execute();
-
-        return true;
-    }
 
 
     /**
