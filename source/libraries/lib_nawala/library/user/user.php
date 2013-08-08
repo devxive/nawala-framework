@@ -19,18 +19,6 @@ defined('_NFW_FRAMEWORK') or die();
 
 abstract class NFWUser
 {
-	// the user object to work with
-	protected static $user;
-
-	public function __construct($id = false)
-	{
-		if (!$id) {
-			self::$user = JFactory::getUser();
-		} else {
-			self::$user = JFactory::getUser($id);
-		}
-	}
-
 	/*
 	 * Method to get the user id
 	 *
