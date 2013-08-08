@@ -22,8 +22,50 @@ defined('_JEXEC') or die();
  * Nawala Framework Access Helper Class
  *
  */
-abstract class PFAccessHelper
+abstract class NFWAccessHelper
 {
+	/*
+	 * Method to get actions based on component, type and itemId
+	 *
+	 * @param     string    $app       The components name
+	 * @param     string    $type      The type of the action to check for as set in access.xml in components admin folder. [ component|category|CustomSettingsFromAccess.xml ]
+	 * @param     int       $itemId    The item id, can be eiter a category id or a plugin id
+	 *
+	 * @return    void
+	 */
+	public static function getActions($app, $type, $itemId = 0)
+	{
+		// Check for itemId
+		if ( !$app || !$type ) {
+			return false;
+		}
+
+		$user   = JFactory::getUser();
+		$result = new JObject();
+
+		if ( empty($itemId) ) {
+			$assetName = $app;
+		}
+		else {
+			$assetName = $app . '.' . $type . '.' . (int) $itemId;
+		}
+
+		$actions = JAccess::getActions($app, $type);
+
+		foreach( $actions as $action ) {
+			$result->set( $action->name, $user->authorise($action->name, $assetName) );
+		}
+
+		return $result;
+	}
+
+
+
+
+
+
+
+
     /**
      * Returns all parent groups of the given group id
      *
