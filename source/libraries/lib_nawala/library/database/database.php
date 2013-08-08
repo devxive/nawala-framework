@@ -246,7 +246,7 @@ abstract class NFWDatabase
 		}
 
 		// Format the result and return
-		if ( isset($dbResult[0]) ) {
+		if ( isset($result[0]) ) {
 			return self::formatOutput($result[0], $output, $debug);
 		} else {
 			return self::formatOutput($result, $output, $debug);
