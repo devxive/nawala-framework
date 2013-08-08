@@ -57,7 +57,6 @@ abstract class NFWHtml
 		}
 
 		// Load jQuery
-//		JHtml::_('jquery.framework');
 		JHtml::_('script', 'nawala/jquery.min.js', false, true, false, false, $debug);
 
 		// Check if we are loading in noConflict
@@ -89,8 +88,6 @@ abstract class NFWHtml
 		// Load Bootstrap main CSS
 		if ($includeMainCss)
 		{
-//			JHtml::_('stylesheet', 'jui/bootstrap.min.css', $attribs, true);
-//			JHtml::_('stylesheet', 'jui/bootstrap-responsive.min.css', $attribs, true);
 			JHtml::_('stylesheet', 'nawala/bootstrap.min.css', $attribs, true);
 			JHtml::_('stylesheet', 'nawala/bootstrap-responsive.min.css', $attribs, true);
 		}
@@ -98,7 +95,6 @@ abstract class NFWHtml
 		// Load Bootstrap RTL CSS
 		if ($direction === 'rtl')
 		{
-//			JHtml::_('stylesheet', 'jui/bootstrap-rtl.css', $attribs, true);
 			JHtml::_('stylesheet', 'nawala/bootstrap-rtl.css', $attribs, true);
 		}
 	}
@@ -198,5 +194,48 @@ abstract class NFWHtml
 		if (($length + 3) < $chars || $chars <= 0) return $truncated;
 
 		return substr($truncated, 0, ($chars - 3)) . '...';
+	}
+
+
+	/**
+	 * Method to remove the JUI
+	 *
+	 * @return    void
+	 */
+	public static function removeJUI($site = true, $admin = false)
+	{
+		$app = JFactory::getApplication();
+
+		if ( $site && $app->isSite() ) {
+			// Get the _scripts from HeadData
+			$document = JFactory::getDocument();
+			$headData = $document->getHeadData();
+			$scripts = $headData['scripts'];
+
+			// Unset JUI scripts
+			unset($scripts['/media/jui/js/bootstrap.min.js']);
+			unset($scripts['/media/jui/js/jquery-noconflict.js']);
+			unset($scripts['/media/jui/js/jquery.min.js']);
+
+			// Pull back the modified HeadData
+			$headData['scripts'] = $scripts;
+			$document->setHeadData($headData);
+		}
+
+		if ( $admin && $app->isAdmin() ) {
+			// Get the _scripts from HeadData
+			$document = JFactory::getDocument();
+			$headData = $document->getHeadData();
+			$scripts = $headData['scripts'];
+
+			// Unset JUI scripts
+			unset($scripts['/media/jui/js/bootstrap.min.js']);
+			unset($scripts['/media/jui/js/jquery-noconflict.js']);
+			unset($scripts['/media/jui/js/jquery.min.js']);
+
+			// Pull back the modified HeadData
+			$headData['scripts'] = $scripts;
+			$document->setHeadData($headData);
+		}
 	}
 }
