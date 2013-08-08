@@ -32,10 +32,10 @@ class NFWModuleHelper
 	 * @return    mixed             True on success, false on error
 	 *
 	 */
-	public static function add($menutype = false, $title = 'Menu', $position = 'sidebar')
+	public static function add($data)
 	{
 		// Check for data
-		if ( !$data['module'] ) {
+		if ( !isset($data['module']) ) {
 			return false;
 		}
 
