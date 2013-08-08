@@ -32,11 +32,18 @@ abstract class NFWAccessHelper
 	 * @param     int       $itemId    The item id, can be eiter a category id or a plugin id
 	 *
 	 * @return    void
+	 *
+	 * @example                        $acl = NFWAccessHelper::getActions('com_mycomponent', 'category', 5);
+	 *					if ( $acl->get('core.create') ) {
+	 *                                     // true
+	 *                                 } else {
+	 *                                     // false
+	 *                                 }
 	 */
 	public static function getActions($app, $type, $itemId = 0)
 	{
 		// Check for itemId
-		if ( !$app || !$type ) {
+		if ( !$app ) {
 			return false;
 		}
 
