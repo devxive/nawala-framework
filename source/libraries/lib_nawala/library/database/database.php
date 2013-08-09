@@ -209,11 +209,11 @@ abstract class NFWDatabase
 			if ( isset($dataFlip['*']) ) {
 				$select = '*';
 			} else {
-				foreach($tableColumns as $tableColumn)
+				foreach($dataFlip as $key => $val)
 				{
-					if( isset($dataFlip[$tableColumn]) )
+					if( isset($dataFlip[$key]) )
 					{
-						$columns[] = $tableColumn;
+						$columns[] = $key;
 					}
 				}
 
@@ -247,7 +247,11 @@ abstract class NFWDatabase
 
 		// Format the result and return
 		if ( !isset($result[1]) ) {
-			return self::formatOutput($result[0], $output, $debug);
+			if ( isset($result[0]) ) {
+				return self::formatOutput($result[0], $output, $debug);
+			} else {
+				return self::formatOutput($result, $output, $debug);
+			}
 		} else {
 			return self::formatOutput($result, $output, $debug);
 		}
