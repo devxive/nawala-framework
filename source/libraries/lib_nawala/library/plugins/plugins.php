@@ -10,8 +10,6 @@
 
 defined('_JEXEC') or die;
 
-nimport('NHtml.Html', false);
-
 abstract class NPlugins
 {
 }

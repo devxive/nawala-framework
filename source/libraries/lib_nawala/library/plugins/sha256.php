@@ -10,7 +10,7 @@
 
 defined('_JEXEC') or die;
 
-abstract class NPluginsSHA256
+class NFWPluginsSha256
 {
 	/**
 	 * @var    array  Array containing information for loaded files
@@ -46,7 +46,7 @@ abstract class NPluginsSHA256
 		}
 
 		// Include JS frameworks
-		NHtml::loadJsFramework();
+		NFWHtml::loadJsFramework();
 
 		// Include dependencies
 		$initializer_msg = "alertify.error('Initializer not found!');";
