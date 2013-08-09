@@ -48,10 +48,13 @@ abstract class NFWUserGroup
 	 * No Solution:
 	 * A profile plugin where the user or the company could set the parent. This only works if the user is absolutely in one company!!!
 	 *
-	 * @return    int    Returned id of the current user. 0 will be returned if no user is logged in.
+	 * @param     boolean    $implode        Should the returned data be imploded as string ( eg. for sql In clauses? )
+	 * @param     array      $injectGroup    Groups that are injectet to the returned result ( eg. if someone use group 0 or something else as global, means is accessible for all) Works only with implode options at this time!
+	 *
+	 * @return    mixed                      Returned id of the current user. 0 will be returned if no user is logged in.
 	 *
 	 */
-	public function getParents()
+	public function getParents($implode = false, $injectGroup = false)
 	{
 		$db = JFactory::getDbo();
 		$userId = (int) JFactory::getUser()->id;
@@ -67,8 +70,22 @@ abstract class NFWUserGroup
 
 		$db->setQuery($query);
 
-		$result = $db->loadObjectList();
+		$results = $db->loadObjectList();
 
-		return $result;
+		if ( $implode ) {
+			if ( $injectGroup ) {
+				foreach ($injectGroup as $key => $val) {
+					$resultHelper[$key] = $key;
+				}
+			}
+
+			foreach( $results as $result ) {
+				$resultHelper[$result->id] = $result->id;
+			}
+
+			$results = implode(',', $resultHelper);
+		}
+
+		return $results;
 	}
 }
