@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * @project		XAP Project - Xive-Application-Platform
  * @subProject	Nawala Framework - A PHP and Javascript framework
@@ -152,7 +152,7 @@ abstract class NFWHtmlDatatables
 					 * rather it is done here
 					 * Bootstrap, FontAwesome version 1.0
 					 */
-					$('#" . $selector . " tbody td a#rowToggle').on('click', function () {
+					$('#" . $selector . " tbody td a.rowToggle').on('click', function () {
 						var nTr = $(this).parents('tr')[0];
 						if ( oTable.fnIsOpen(nTr) )
 						{
@@ -166,8 +166,8 @@ abstract class NFWHtmlDatatables
 						else
 						{
 							/* Open this row */
-							$(this).children('i')[0].className = 'icon-eye-open icon-only';
-							$(this).children('i')[0].addClass('red');
+							$(this).eq('i').className = 'icon-eye-open icon-only';
+							$(this).eq('i').addClass('red');
 							var nDetailsRow = oTable.fnOpen( nTr, fnFormatDetails(oTable, nTr), 'details' );
 							$('div.innerDetails', nDetailsRow).slideDown('slow', 'easeInOutCubic', function() {} );
 						}
