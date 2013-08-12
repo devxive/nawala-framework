@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * @project		XAP Project - Xive-Application-Platform
  * @subProject	Nawala Framework - A PHP and Javascript framework
@@ -1322,6 +1322,64 @@ abstract class NFWHtmlJavaScript
 
 		return;
 	}
+
+
+	/**
+	 * Setup a cache function to detect if an field value has changed. Detects even if field has changed by CopyPaste, jQuery .val() changes, etc...
+	 *
+	 * @param     string    $customEvent    Select a custom event. Note: This is not the jQuery event. Use a different name, just for clearification.
+	 *
+	 * @return    void
+	 *
+	 * @since   6.1
+	 *
+	 * @example                             // Detect changes on input fields
+	 *                                      jQuery('input').on('inputchange', function() {
+	 *                                          // If input has changed, execute this function
+	 *                                      });
+	 */
+	public function detectChanges($customEvent = 'inputchange')
+	{
+		$sig = md5( serialize( array($customEvent) ) );
+
+		// Only load once
+		if (isset(self::$loaded[__METHOD__][$sig]))
+		{
+			return;
+		}
+
+		// Include JS framework
+		NFWHtml::loadJsFramework();
+
+		// Attach the function to the document
+		JFactory::getDocument()->addScriptDeclaration("
+			jQuery(document).ready(function() {
+				$.event.special." . $customEvent . " = {
+					setup: function() {
+						var self = this, val;
+						$.data(this, 'timer', window.setInterval(function() {
+							val = self.value;
+							if ( $.data( self, 'cache') != val ) {
+								$.data( self, 'cache', val );
+								$( self ).trigger( '" . $customEvent . "' );
+							}
+						}, 20));
+					},
+					teardown: function() {
+						window.clearInterval( $.data(this, 'timer') );
+					},
+					add: function() {
+						$.data(this, 'cache', this.value);
+					}
+				};
+			});\n"
+		);
+
+		self::$loaded[__METHOD__][$sig] = true;
+
+		return;
+	}
+
 
 	 /*
 	 * Load dependencies for this class
