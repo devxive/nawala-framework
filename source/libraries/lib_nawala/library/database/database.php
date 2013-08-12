@@ -62,6 +62,7 @@ abstract class NFWDatabase
 		self::$tableName = $table;
 		self::$db = JFactory::getDbo();
 		self::$query = self::$db->getQuery(true);
+		self::$query = self::$query->clear();
 
 		self::$userId = NFWUser::getId();
 		self::$currentTime = NFWDate::getCurrent('MySQL');
@@ -95,7 +96,7 @@ abstract class NFWDatabase
 	 *                                      // false and raiseErrorMessage
 	 *                                  }
 	 */
-	public function get($table, $data = '*', $id = false, $output = 'ARRAY', $debug = false)
+	public function get($table, $data = '*', $id = false, $output = 'ARRAY', $diffId = 'id', $debug = false)
 	{
 		// Check for an id
 		if (!$id || !(int) $id) {
@@ -139,7 +140,7 @@ abstract class NFWDatabase
 		$query
 			->select( $select )
 			->from( $db->quoteName('#__' . $table) )
-			->where( 'id = ' . $id );
+			->where( $diffId . ' = ' . $id );
 
 		$db->setQuery($query);
 
@@ -170,7 +171,7 @@ abstract class NFWDatabase
 	 *
 	 * @param     string     $table         Name of the table where to insert data without prefix or #__
 	 * @param     mixed      $data          Array with the datas to select
-	 * @param     array      $conditions    The row id to select data from
+	 * @param     array      $conditions    An array with datas to set the where-and clauses
 	 * @param     string     $output        Define an output, standard = ARRAY ( ARRAY|OBJECT|JSON|XML_UTF-8 )
 	 * @param     boolean    $debug         Debuggin options true|false
 	 *
@@ -183,8 +184,9 @@ abstract class NFWDatabase
 	 *
 	 * @since                               6.0
 	 *
-	 * @usage                               $data = array('last_name', 'first_name' ,'fieldDoesNotExistInDatabase');
-	 *                                      $result = NFWDatabase::get('database_table', $data, 5); // From #__database_table
+	 * @usage                               $data       = array('last_name', 'first_name' ,'fieldDoesNotExistInDatabase');
+	 *                                      $conditions = array('column001' => 'example', 'column002' => 544);
+	 *                                      $result = NFWDatabase::select( 'database_table', $data, $conditions ); // From #__database_table
 	 *
 	 *                                      if( $result ) {
 	 *                                          // The datas
@@ -340,7 +342,7 @@ abstract class NFWDatabase
 	 *                                      // Update failed => raiseErrorMessage....
 	 *                                  }
 	 */
-	protected function update($table, $data, $id = false)
+	protected function update($table, $data, $id = false, $output = 'ARRAY', $diffId = 'id', $debug = false)
 	{
 		// Check for an id
 		if (!$id || !(int) $id) {
@@ -356,7 +358,7 @@ abstract class NFWDatabase
 		self::$query
 			->update( self::$db->quoteName('#__' . $table) )
 			->set( $fieldHelper->fields )
-			->where( 'id = ' . (int) $id );
+			->where( $diffId . ' = ' . (int) $id );
 
 		self::$db->setQuery(self::$query);
 
@@ -371,7 +373,8 @@ abstract class NFWDatabase
 		// Clear the query
 		self::$db->clear();
 
-		return $result;
+		return self::formatOutput($result, $output, $debug);
+//		return $result;
 	}
 
 
@@ -396,14 +399,14 @@ abstract class NFWDatabase
 	 *                                      // Delete row failed => raiseErrorMessage....
 	 *                                  }
 	 */
-	protected function delete($table, $id, $output = 'ARRAY', $debug = false)
+	protected function delete($table, $id, $output = 'ARRAY', $diffId = 'id', $debug = false)
 	{
 		// Initialise variables.
 		self::init($table);
 
 		self::$query
 			->delete( self::$db->quoteName('#__' . $table) )
-			->where( 'id = ' . $id );
+			->where( $diffId . ' = ' . $id );
 
 		self::$db->setQuery(self::$query);
 
@@ -429,6 +432,7 @@ abstract class NFWDatabase
 	 * @param     mixed      $table     Name of the table where to insert data without prefix or #__
 	 * @param     mixed      $data      Array with the datas, or object with arrays of datas
 	 * @param     string     $output    Define an output, standard = ARRAY ( ARRAY|OBJECT|JSON|XML_UTF-8 )
+	 * @param     boolean    $diffId    If set to true, $data should contain a different identifier than "id" (must be "_id" NOTE: done by regExp /(_id|Id)$/)
 	 * @param     boolean    $debug     Debuggin options true|false
 	 *
 	 * @return    mixed                 Return object with the resulting table ids that are inserted or false
@@ -467,7 +471,7 @@ abstract class NFWDatabase
 	 *                                      // raiseErrorMessage....
 	 *                                  }
 	 */
-	public function save($table, $data, $output = 'ARRAY', $debug = false)
+	public function save($table, $data, $output = 'ARRAY', $diffId = 'id', $debug = false)
 	{
 		// Initialise variables.
 		self::init($table);
@@ -477,14 +481,16 @@ abstract class NFWDatabase
 		if ( is_object($data) ) {
 			foreach( $data as $data ) {
 				// Check for an id in the dataset to update
-				if ( isset($data['id']) && (int) $data['id'] ) {
+				if ( isset($data[$diffId]) && (int) $data[$diffId] ) {
 					if ( isset($data['delete']) && $data['delete'] == true ) {
-						$result[] = self::delete($table, $data['id'], $output, $debug);
+						$result[$data[$diffId]] = self::delete($table, $data[$diffId], $output, $diffId, $debug);
 					} else {
-						$result[] = self::update($table, $data, $data['id'], $output, $debug);
+						$result[$data[$diffId]] = self::update($table, $data, $data[$diffId], $output, $diffId, $debug);
 					}
 				} else {
-					$result[] = self::insert($table, $data, $output, $debug);
+					// TODO: have to try to store the returned id as array key
+					$return = self::insert($table, $data, $output, $debug);
+					$result[] = $return;
 				}
 			}
 
@@ -494,11 +500,11 @@ abstract class NFWDatabase
 			}
 		} else {
 			// Check for an id in the dataset to update
-			if ( isset($data['id']) && (int) $data['id'] ) {
+			if ( isset($data[$diffId]) && (int) $data[$diffId] ) {
 				if ( isset($data['delete']) && $data['delete'] == true ) {
-					$result = self::delete($table, $data['id'], $output, $debug);
+					$result = self::delete($table, $data[$diffId], $output, $diffId, $debug);
 				} else {
-					$result = self::update($table, $data, $data['id'], $output, $debug);
+					$result = self::update($table, $data, $data[$diffId], $output, $diffId, $debug);
 				}
 			} else {
 				$result = self::insert($table, $data, $output, $debug);
@@ -591,13 +597,13 @@ abstract class NFWDatabase
 				foreach($tableColumns as $tableColumn)
 				{
 					// Check and set this first to override later, if supported by table and if set in data
-					if ( $tableColumn == 'created' ) {
+					if ( $tableColumn == 'created' && !isset($data['created']) ) {
 						$columns[] = $tableColumn;
 						$values[] = self::$db->quote( self::$currentTime );
 					}
 
 					// Check and set this first to override later, if supported by table and if set in data
-					if ( $tableColumn == 'created_by' ) {
+					if ( $tableColumn == 'created_by' && !isset($data['created_by']) ) {
 						$columns[] = $tableColumn;
 						$values[] = self::$userId;
 					}
@@ -620,12 +626,12 @@ abstract class NFWDatabase
 				foreach($tableColumns as $tableColumn)
 				{
 					// Check and set this first to override later, if supported by table and if set in data
-					if ( $tableColumn == 'modified' ) {
+					if ( $tableColumn == 'modified' && !isset($data['modified']) ) {
 						$fields[] = 'modified = ' . self::$db->quote( self::$currentTime );
 					}
 
 					// Check and set this first to override later, if supported by table and if set in data
-					if ( $tableColumn == 'modified_by' ) {
+					if ( $tableColumn == 'modified_by' && !isset($data['modified_by']) ) {
 						$fields[] = 'modified_by = ' . self::$userId;
 					}
 
