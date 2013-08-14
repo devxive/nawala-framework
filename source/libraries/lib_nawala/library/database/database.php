@@ -345,7 +345,7 @@ abstract class NFWDatabase
 	protected function update($table, $data, $id = false, $output = 'ARRAY', $diffId = 'id', $debug = false)
 	{
 		// Check for an id
-		if (!$id || !(int) $id) {
+		if ( !$id ) {
 			return false;
 		}
 
@@ -355,10 +355,20 @@ abstract class NFWDatabase
 		// Build the field clause
 		$fieldHelper = self::buildDataClause($data, 'UPDATE');
 
-		self::$query
-			->update( self::$db->quoteName('#__' . $table) )
-			->set( $fieldHelper->fields )
-			->where( $diffId . ' = ' . (int) $id );
+		if ( is_array($diffId) ) {
+			// Build the where clause from $diffId array
+			$fieldHelper = self::buildDataClause($diffId, 'CONDITIONS');
+
+			self::$query
+				->update( self::$db->quoteName('#__' . $table) )
+				->set( $fieldHelper->fields )
+				->where( $fieldHelper->conditions );
+		} else {
+			self::$query
+				->update( self::$db->quoteName('#__' . $table) )
+				->set( $fieldHelper->fields )
+				->where( $diffId . ' = ' . (int) $id );
+		}
 
 		self::$db->setQuery(self::$query);
 
@@ -404,9 +414,18 @@ abstract class NFWDatabase
 		// Initialise variables.
 		self::init($table);
 
-		self::$query
-			->delete( self::$db->quoteName('#__' . $table) )
-			->where( $diffId . ' = ' . $id );
+		if ( is_array($diffId) ) {
+			// Build the where clause from $diffId array
+			$fieldHelper = self::buildDataClause($diffId, 'CONDITIONS');
+
+			self::$query
+				->delete( self::$db->quoteName('#__' . $table) )
+				->where( $fieldHelper->conditions );
+		} else {
+			self::$query
+				->delete( self::$db->quoteName('#__' . $table) )
+				->where( $diffId . ' = ' . $id );
+		}
 
 		self::$db->setQuery(self::$query);
 
@@ -432,7 +451,7 @@ abstract class NFWDatabase
 	 * @param     mixed      $table     Name of the table where to insert data without prefix or #__
 	 * @param     mixed      $data      Array with the datas, or object with arrays of datas
 	 * @param     string     $output    Define an output, standard = ARRAY ( ARRAY|OBJECT|JSON|XML_UTF-8 )
-	 * @param     boolean    $diffId    If set to true, $data should contain a different identifier than "id" (must be "_id" NOTE: done by regExp /(_id|Id)$/)
+	 * @param     boolean    $diffId    If set to true, $data should contain a different identifier than "id" (NOTE: works ONLY WITH id col as primary key!)
 	 * @param     boolean    $debug     Debuggin options true|false
 	 *
 	 * @return    mixed                 Return object with the resulting table ids that are inserted or false
@@ -478,36 +497,86 @@ abstract class NFWDatabase
 
 		$result = array();
 
-		if ( is_object($data) ) {
-			foreach( $data as $data ) {
+		// Check if $diffId is array
+		if ( is_array($diffId) ) {
+			// #################################### UNIQUE KEY PROCESSOR ####################################
+			if ( is_object($data) ) {
+				foreach( $data as $data ) {
+					// Check for if $diffId has values
+					foreach( $diffId as $key => $value ) {
+						if ( empty($value) ) {
+							$emptyValue = true;
+							break;
+						} else {
+							$emptyValue = false;
+						}
+					}
+
+					// Delete old and isnert new row
+					if ( $emptyValue ) {
+						$result = array('status' => false, 'code' => 0, 'message' => 'NFWDatabase=> $diffId is not a valid array');
+					} else {
+						$return = self::delete($table, null, $output, $diffId, $debug);
+						$result = self::insert($table, $data, $output, $debug);
+					}
+				}
+	
+				// Convert to object to identify for XML_UTF-8
+				if ( $output == 'XML_UTF-8' ) {
+					$result = (object) $result;
+				}
+			} else {
+				// Check for if $diffId has values
+				foreach( $diffId as $key => $value ) {
+					if ( empty($value) ) {
+						$emptyValue = true;
+						break;
+					} else {
+						$emptyValue = false;
+					}
+				}
+
+				// Delete old and isnert new row
+				if ( $emptyValue ) {
+					$result = array('status' => false, 'code' => 0, 'message' => 'NFWDatabase=> $diffId is not a valid array');
+				} else {
+					$return = self::delete($table, null, $output, $diffId, $debug);
+					$result = self::insert($table, $data, $output, $debug);
+				}
+			}
+		} else {
+			// #################################### PRIMARY KEY PROCESSOR ####################################
+			if ( is_object($data) ) {
+				foreach( $data as $data ) {
+					// Check for an id in the dataset to update // TODO: add check against 0
+					if ( isset($data[$diffId]) && (int) $data[$diffId] ) {
+						if ( isset($data['delete']) && $data['delete'] == true ) {
+							$result[$data[$diffId]] = self::delete($table, $data[$diffId], $output, $diffId, $debug);
+						} else {
+							$result[$data[$diffId]] = self::update($table, $data, $data[$diffId], $output, $diffId, $debug);
+						}
+					} else {
+						// TODO: have to try to store the returned id as array key
+						$return = self::insert($table, $data, $output, $debug);
+						$result[] = $return;
+					}
+				}
+	
+				// Convert to object to identify for XML_UTF-8
+				if ( $output == 'XML_UTF-8' ) {
+					$result = (object) $result;
+				}
+			} else {
 				// Check for an id in the dataset to update
 				if ( isset($data[$diffId]) && (int) $data[$diffId] ) {
 					if ( isset($data['delete']) && $data['delete'] == true ) {
-						$result[$data[$diffId]] = self::delete($table, $data[$diffId], $output, $diffId, $debug);
+						$result = self::delete($table, $data[$diffId], $output, $diffId, $debug);
 					} else {
-						$result[$data[$diffId]] = self::update($table, $data, $data[$diffId], $output, $diffId, $debug);
+						$result = self::update($table, $data, $data[$diffId], $output, $diffId, $debug);
 					}
 				} else {
-					// TODO: have to try to store the returned id as array key
-					$return = self::insert($table, $data, $output, $debug);
-					$result[] = $return;
+					$result = self::insert($table, $data, $output, $debug);
 				}
-			}
-
-			// Convert to object to identify for XML_UTF-8
-			if ( $output == 'XML_UTF-8' ) {
-				$result = (object) $result;
-			}
-		} else {
-			// Check for an id in the dataset to update
-			if ( isset($data[$diffId]) && (int) $data[$diffId] ) {
-				if ( isset($data['delete']) && $data['delete'] == true ) {
-					$result = self::delete($table, $data[$diffId], $output, $diffId, $debug);
-				} else {
-					$result = self::update($table, $data, $data[$diffId], $output, $diffId, $debug);
-				}
-			} else {
-				$result = self::insert($table, $data, $output, $debug);
 			}
 		}
 
