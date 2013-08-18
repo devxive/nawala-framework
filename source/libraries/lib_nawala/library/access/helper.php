@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * @project		XAP Project - Xive-Application-Platform
  * @subProject	Nawala Framework - A PHP and Javascript framework
@@ -40,7 +40,7 @@ abstract class NFWAccessHelper
 	 *                                     // false
 	 *                                 }
 	 */
-	public static function getActions($app, $type, $itemId = 0)
+	public static function getActions($app, $type = 'component', $itemId = 0)
 	{
 		// Check for itemId
 		if ( !$app ) {
