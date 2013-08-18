@@ -173,6 +173,7 @@ abstract class NFWDatabase
 	 * @param     mixed      $data          Array with the datas to select
 	 * @param     array      $conditions    An array with datas to set the where-and clauses
 	 * @param     string     $output        Define an output, standard = ARRAY ( ARRAY|OBJECT|JSON|XML_UTF-8 )
+	 * @param     string     $ordering      If added, turn on sorting by the col name and ASC|DESC    (eg. 'order_col ASC')
 	 * @param     boolean    $debug         Debuggin options true|false
 	 *
 	 * @return    mixed                     Return data based on output with the results or false.
@@ -194,7 +195,7 @@ abstract class NFWDatabase
 	 *                                          // false and raiseErrorMessage
 	 *                                      }
 	 */
-	public function select($table, $data = '*', $conditions = false, $output = 'ARRAY', $debug = false)
+	public function select($table, $data = '*', $conditions = false, $output = 'ARRAY', $ordering = false, $debug = false)
 	{
 		// Initialise variables.
 		self::init($table);
@@ -231,6 +232,10 @@ abstract class NFWDatabase
 			->select( $select )
 			->from( self::$db->quoteName('#__' . $table) )
 			->where( $fieldHelper->conditions );
+
+		if ( $ordering ) {
+			self::$query->order('ordering ASC');
+		}
 
 		self::$db->setQuery(self::$query);
 
