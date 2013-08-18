@@ -24,16 +24,17 @@
 .alertify-cover {
 	position: fixed; z-index: 99999;
 	top: 0; right: 0; bottom: 0; left: 0;
-	background-color:white;
-	filter:alpha(opacity=0);
-	opacity:0;
+	background-color: rgba(0, 0, 0, 0.4);
+	filter:alpha(opacity=1);
+	opacity:1;
 }
 	.alertify-cover-hidden {
 		display: none;
 	}
 .alertify {
 	position: fixed; z-index: 99999;
-	top: 50px; left: 50%;
+	top: 25%;
+	left: 50%;
 	width: 550px;
 	margin-left: -275px;
 	opacity: 1;
