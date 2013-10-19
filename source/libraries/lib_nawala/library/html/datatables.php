@@ -157,8 +157,7 @@ abstract class NFWHtmlDatatables
 						if ( oTable.fnIsOpen(nTr) )
 						{
 							/* This row is already open - close it */
-							$(this).children('i')[0].className = 'icon-eye-close icon-only';
-							$(this).children('i')[0].removeClass('red');
+							$(this).children('i').attr('class', 'icon-eye-close icon-only');
 							$('div.innerDetails', $(nTr).next()[0]).slideUp('slow', 'easeInOutCubic', function() {
 								oTable.fnClose( nTr );
 							});
@@ -166,8 +165,7 @@ abstract class NFWHtmlDatatables
 						else
 						{
 							/* Open this row */
-							$(this).eq('i').className = 'icon-eye-open icon-only';
-							$(this).eq('i').addClass('red');
+							$(this).children('i').attr('class', 'red icon-eye-open icon-only');
 							var nDetailsRow = oTable.fnOpen( nTr, fnFormatDetails(oTable, nTr), 'details' );
 							$('div.innerDetails', nDetailsRow).slideDown('slow', 'easeInOutCubic', function() {} );
 						}
