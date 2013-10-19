@@ -403,6 +403,63 @@ abstract class NFWHtmlJavaScript
 		return;
 	}
 
+
+	/**
+	 * Add javascript support for Bootstrap accordion
+	 *
+	 * Use element's Title as popover content
+	 *
+	 * @param    string    $selector    Selector for the tooltip
+	 * @param    array     $params      An array of options for the tooltip.
+	 *                                  Options for the tooltip can be:
+	 *                                      animation  boolean          apply a css fade transition to the tooltip
+	 *                                      html       boolean          Insert HTML into the tooltip. If false, jQuery's text method will be used to insert
+	 *                                                                  content into the dom.
+	 *                                      placement  string|function  how to position the tooltip - top | bottom | left | right
+	 *                                      selector   string           If a selector is provided, tooltip objects will be delegated to the specified targets.
+	 *                                      title      string|function  default title value if `title` tag isn't present
+	 *                                      trigger    string           how tooltip is triggered - hover | focus | manual
+	 *                                      content    string|function  default content value if `data-content` attribute isn't present
+	 *                                      delay      number|object    delay showing and hiding the tooltip (ms) - does not apply to manual trigger type
+	 *                                                                  If a number is supplied, delay is applied to both hide/show
+	 *                                                                  Object structure is: delay: { show: 500, hide: 100 }
+	 *
+	 * @return    void
+	 *
+	 * @since     13.2
+	 */
+	public function setAccordion($selector = '.collapse', $params = array())
+	{
+		$sig = md5(serialize(array($selector)));
+
+		// Only load once
+		if (isset(self::$loaded[__METHOD__][$sig]))
+		{
+			return;
+		}
+
+		// Include JS framework
+		NFWHtml::loadJsFramework();
+
+		// Setup options object
+		$opt['parent'] = isset($params['parent']) ? $params['parent'] : null;
+		$opt['toggle'] = isset($params['toggle']) ? $params['toggle'] : null;
+
+		$options = NFWHtml::getJSObject($opt);
+
+		// Attach the function to the document
+		JFactory::getDocument()->addScriptDeclaration(
+			"jQuery(document).ready(function() {
+				jQuery('" . $selector . "').popover(" . $options . ");
+			});"
+		);
+
+		self::$loaded[__METHOD__][$sig] = true;
+
+		return;
+	}
+
+
 	/**
 	 * Add javascript support for bootstrap loading buttons
 	 *
@@ -1136,12 +1193,6 @@ abstract class NFWHtmlJavaScript
 		self::dependencies('jquery.moment');
 		self::dependencies('locales.de');
 
-		// Attach the function to the document
-		JFactory::getDocument()->addScriptDeclaration("
-			jQuery(document).ready(function() {
-			});\n"
-		);
-
 		self::$loaded[__METHOD__][$sig] = true;
 
 		return;
@@ -1303,11 +1354,11 @@ abstract class NFWHtmlJavaScript
                         dateLimit: false
                      },
                      function(start, end) {
-                        $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+                        $('" . $selector . " span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
                      }
                   );
                   //Set the initial state of the picker label
-                  $('#reportrange span').html(moment().subtract('days', 29).format('MMMM D, YYYY') + ' - ' + moment().format('MMMM D, YYYY'));
+                  $('" . $selector . " span').html(moment().subtract('days', 29).format('MMMM D, YYYY') + ' - ' + moment().format('MMMM D, YYYY'));
 
 
 
@@ -1374,6 +1425,84 @@ abstract class NFWHtmlJavaScript
 				};
 			});\n"
 		);
+
+		self::$loaded[__METHOD__][$sig] = true;
+
+		return;
+	}
+
+
+	/**
+	 * Adding support for sticky table headers
+	 *
+	 * @param     string    $selector    The selector class for the sticky thead
+	 *
+	 * @return    void
+	 *
+	 * @since   6.1
+	 *
+	 * @example                             // Detect changes on input fields
+	 *                                      jQuery('input').on('inputchange', function() {
+	 *                                          // If input has changed, execute this function
+	 *                                      });
+	 */
+	public function stickyTableHeaders($selector = 'stickyheader')
+	{
+		$sig = md5( serialize( array($selector) ) );
+
+		// Only load once
+		if (isset(self::$loaded[__METHOD__][$sig]))
+		{
+			return;
+		}
+
+		// Include JS framework
+		NFWHtml::loadJsFramework();
+
+		// Include dependencies
+		self::dependencies('jquery.stickytableheaders');
+
+		// Attach the function to the document
+		JFactory::getDocument()->addScriptDeclaration("
+			jQuery(document).ready(function() {
+				$('table').stickyTableHeaders({fixedOffset: 45});
+			});\n"
+		);
+
+		self::$loaded[__METHOD__][$sig] = true;
+
+		return;
+	}
+
+
+	/**
+	 * Load JQueryUI
+	 *
+	 * @param     string    $css    Load JQueryUI with standard css support
+	 *
+	 * @return    void
+	 *
+	 * @since   6.1
+	 */
+	public function loadJQueryUI($css = false)
+	{
+		$sig = md5( serialize( array('$css') ) );
+
+		// Only load once
+		if (isset(self::$loaded[__METHOD__][$sig]))
+		{
+			return;
+		}
+
+		// Include JS framework
+		NFWHtml::loadJsFramework();
+
+		// Include dependencies
+		self::dependencies('jquery.ui');
+
+		if ( $css ) {
+			self::dependencies('jquery.ui.css');
+		}
 
 		self::$loaded[__METHOD__][$sig] = true;
 
@@ -1497,6 +1626,21 @@ abstract class NFWHtmlJavaScript
 			JHtml::_('stylesheet', 'nawala/easy-pie-chart.css', false, true);
 			JFactory::getDocument()->addScript('//maps.google.com/maps/api/js?sensor=false');
 			JHtml::_('script', 'nawala/jquery.easy-pie-chart.js', false, true, false, false, $debug);
+		}
+
+		if($type === 'jquery.stickytableheaders')
+		{
+			JHtml::_('script', 'nawala/jquery.stickytableheaders.js', false, true, false, false, $debug);
+		}
+
+		if($type === 'jquery.ui')
+		{
+			JHtml::_('script', 'nawala/jquery.ui.min.js', false, true, false, false, $debug);
+		}
+
+		if($type === 'jquery.ui.css')
+		{
+			JHtml::_('stylesheet', 'nawala/jquery.ui.min.css', false, true);
 		}
 
 		self::$loaded[__METHOD__][$sig] = true;
