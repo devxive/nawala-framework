@@ -405,62 +405,6 @@ abstract class NFWHtmlJavaScript
 
 
 	/**
-	 * Add javascript support for Bootstrap accordion
-	 *
-	 * Use element's Title as popover content
-	 *
-	 * @param    string    $selector    Selector for the tooltip
-	 * @param    array     $params      An array of options for the tooltip.
-	 *                                  Options for the tooltip can be:
-	 *                                      animation  boolean          apply a css fade transition to the tooltip
-	 *                                      html       boolean          Insert HTML into the tooltip. If false, jQuery's text method will be used to insert
-	 *                                                                  content into the dom.
-	 *                                      placement  string|function  how to position the tooltip - top | bottom | left | right
-	 *                                      selector   string           If a selector is provided, tooltip objects will be delegated to the specified targets.
-	 *                                      title      string|function  default title value if `title` tag isn't present
-	 *                                      trigger    string           how tooltip is triggered - hover | focus | manual
-	 *                                      content    string|function  default content value if `data-content` attribute isn't present
-	 *                                      delay      number|object    delay showing and hiding the tooltip (ms) - does not apply to manual trigger type
-	 *                                                                  If a number is supplied, delay is applied to both hide/show
-	 *                                                                  Object structure is: delay: { show: 500, hide: 100 }
-	 *
-	 * @return    void
-	 *
-	 * @since     13.2
-	 */
-	public function setAccordion($selector = '.collapse', $params = array())
-	{
-		$sig = md5(serialize(array($selector)));
-
-		// Only load once
-		if (isset(self::$loaded[__METHOD__][$sig]))
-		{
-			return;
-		}
-
-		// Include JS framework
-		NFWHtml::loadJsFramework();
-
-		// Setup options object
-		$opt['parent'] = isset($params['parent']) ? $params['parent'] : null;
-		$opt['toggle'] = isset($params['toggle']) ? $params['toggle'] : null;
-
-		$options = NFWHtml::getJSObject($opt);
-
-		// Attach the function to the document
-		JFactory::getDocument()->addScriptDeclaration(
-			"jQuery(document).ready(function() {
-				jQuery('" . $selector . "').popover(" . $options . ");
-			});"
-		);
-
-		self::$loaded[__METHOD__][$sig] = true;
-
-		return;
-	}
-
-
-	/**
 	 * Add javascript support for bootstrap loading buttons
 	 *
 	 * @param	string		$selector	Common id for the button
